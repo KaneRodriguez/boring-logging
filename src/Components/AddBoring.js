@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import uuid from 'uuid';
 
-class AddProject extends Component {
+class AddBoring extends Component {
   constructor(){
     super();
     this.state = {
-      newProject:{}
+      newBoring:{}
     }
   }
 
@@ -17,13 +17,13 @@ class AddProject extends Component {
     if(this.refs.title.value === ''){
       alert('Title is required');
     } else {
-      this.setState({newProject:{
+      this.setState({newBoring:{
         id: uuid.v4(),
         title: this.refs.title.value,
         category: this.refs.category.value
       }}, function(){
         //console.log(this.state);
-        this.props.addProject(this.state.newProject);
+        this.props.addBoring(this.state.newBoring);
       });
     }
     e.preventDefault();
@@ -35,7 +35,7 @@ class AddProject extends Component {
     });
     return (
       <div>
-        <h3>Add Project</h3>
+        <h3>Add Boring</h3>
         <form onSubmit={this.handleSubmit.bind(this)}>
           <div>
             <label>Title</label><br />
@@ -56,9 +56,9 @@ class AddProject extends Component {
   }
 }
 
-AddProject.propTypes = {
+AddBoring.propTypes = {
   categories: React.PropTypes.array,
-  addProject: React.PropTypes.func
+  addBoring: React.PropTypes.func
 }
 
-export default AddProject;
+export default AddBoring;

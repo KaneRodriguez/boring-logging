@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import uuid from 'uuid';
 import $ from 'jquery';
-import Projects from './Components/Projects';
-import Skills from './Components/Skills';
-import AddProject from './Components/AddProject';
+import Borings from './Components/Borings';
+import AddBoring from './Components/AddBoring';
 import Todos from './Components/Todos';
 import './App.css';
 
@@ -11,8 +10,7 @@ class App extends Component {
   constructor(){
     super();
     this.state = {
-      projects: [],
-      skills: [],
+      borings: [],
       todos:[]
     }
   }
@@ -33,8 +31,8 @@ class App extends Component {
     });
   }
 
-  getProjects(){
-    this.setState({projects: [
+  getBorings(){
+    this.setState({borings: [
       {
         id:uuid.v4(),
         title: 'Business Website',
@@ -53,37 +51,10 @@ class App extends Component {
     ]});
   }
 
-  getSkills(){
-    this.setState({skills: [
-      {
-        id:uuid.v4(),
-        title: 'gay'
-      },
-      {
-        id:uuid.v4(),
-        title: 'casanova'
-      },
-      {
-        id:uuid.v4(),
-        title: "hater be hatin'"
-      },
-      {
-        id:uuid.v4(),
-        title: 'slick'
-      },
-      {
-        id:uuid.v4(),
-        title: 'bbc'
-      },
-      {
-        id:uuid.v4(),
-        title: "loop hole'"
-      }
-    ]});
-  }
+  
+  
   componentWillMount(){
-    this.getProjects();
-    this.getSkills();
+    this.getBorings();
     this.getTodos();
   }
 
@@ -91,32 +62,26 @@ class App extends Component {
     this.getTodos();
   }
 
-  handleAddProject(project){
-    let projects = this.state.projects;
-    projects.push(project);
-    this.setState({projects:projects});
+  handleAddBoring(boring){
+    let borings = this.state.borings;
+    borings.push(boring);
+    this.setState({borings:borings});
   }
 
-  handleDeleteProject(id){
-    let projects = this.state.projects;
-    let index = projects.findIndex(x => x.id === id);
-    projects.splice(index, 1);
-    this.setState({projects:projects});
+  handleDeleteBoring(id){
+    let borings = this.state.borings;
+    let index = borings.findIndex(x => x.id === id);
+    borings.splice(index, 1);
+    this.setState({borings:borings});
   }  
   
-  handleDeleteSkill(id){
-    let skills = this.state.skills;
-    let index = skills.findIndex(x => x.id === id);
-    skills.splice(index, 1);
-    this.setState({skills:skills});
-  }
+ 
 
   render() {
     return (
       <div className="App">
-        <AddProject addProject={this.handleAddProject.bind(this)} />
-        <Projects projects={this.state.projects} onDelete={this.handleDeleteProject.bind(this)} />
-        <Skills skills={this.state.skills} onDelete={this.handleDeleteSkill.bind(this)} />
+        <AddBoring addBoring={this.handleAddBoring.bind(this)} />
+        <Borings borings={this.state.borings} onDelete={this.handleDeleteBoring.bind(this)} />
         <hr />
         <Todos todos={this.state.todos} />
       </div>
