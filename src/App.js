@@ -31,7 +31,10 @@ class App extends Component {
   constructor(){
     super();
     this.state = {
-      todos:[]
+      todos: [],
+      projects: [],
+      activeView: "PROJECTS",
+      currentProject: null
     }
   }
 
@@ -50,13 +53,53 @@ class App extends Component {
       }
     });
   }
-  
+
+  getProjects(){
+    this.setState({
+      projects: [{
+        title: "Project 1 title",
+        id: uuid.v4(),
+        borings: [
+            {
+              id:uuid.v4(),
+              title: 'Boring 1',
+              category: 'Web Deisgn'
+            },
+            {
+              id:uuid.v4(),
+              title: 'Boring 2',
+              category: 'Mobile Development'
+            },
+            {
+              id:uuid.v4(),
+              title: 'Boring  3',
+              category: 'Web Development'
+            }
+          ]
+        }]
+    });
+  }
+
   componentWillMount(){
+    this.getProjects();
     this.getTodos();
   }
 
   componentDidMount(){
     this.getTodos();
+  }
+
+  handleAddProject(project){
+    let projects = this.state.projects;
+    projects.push(project);
+    this.setState({projects:projects});
+  }
+
+  handleRemoveProject(project) {
+    let projects = this.state.projects;
+    let index = projects.findIndex(x => x.id === project.id);
+    projects.splice(index, 1);
+    this.setState({projects:projects});
   }
 
   render() {
@@ -65,16 +108,29 @@ class App extends Component {
     return (
       <MuiThemeProvider>
       <div className="App">
-        <MenuAppBar />
-        <ProjectsView />
-        <BoringsView />
 
-        <Todos todos={this.state.todos} />
+        <MenuAppBar />
+        
+        {this.state.activeView === "PROJECTS" ? (
+
+          <ProjectsView 
+            projects={this.state.projects} 
+            addProject={this.handleAddProject.bind(this)}
+            removeProject={this.handleRemoveProject.bind(this)}
+          />
+
+        ) : this.state.activeView === "BORINGS" ? (
+
+          <BoringsView borings={this.state.currentProject.borings} />
+
+        ) : null}
+
       </div>
       </MuiThemeProvider>
 
     );
   }
 }
+//        <Todos todos={this.state.todos} />
 
 export default withStyles(styles)(App);

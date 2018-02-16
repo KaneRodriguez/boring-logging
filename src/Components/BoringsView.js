@@ -16,8 +16,6 @@ class BoringsView extends React.Component {
 
     return (
       <div className={classes.root}>
-        <h3> Project name </h3>
-        <hr /> 
         <TextField
           id="with-placeholder"
           label="New Boring"
@@ -27,7 +25,7 @@ class BoringsView extends React.Component {
         />
         <h3>Saved Borings</h3>
         <hr />
-        <InteractiveList />
+        <InteractiveList items={this.props.borings}/>
       </div>
     );
   }
@@ -35,6 +33,7 @@ class BoringsView extends React.Component {
 
 BoringsView.propTypes = {
   classes: PropTypes.object.isRequired,
+  borings: PropTypes.array
 };
 
 export default withStyles(styles)(BoringsView);

@@ -42,38 +42,52 @@ class InteractiveList extends React.Component {
   state = {
     dense: false,
     secondary: false,
+    items: []
   };
+
+  removeItem(item) {
+    this.props.removeItem(item);
+  }
 
   render() {
     const { classes } = this.props;
     const { dense, secondary } = this.state;
 
-    return (
-      <div className={classes.root}>
-          <Grid item xs={12} md={6}>
-            <Typography variant="title" className={classes.title}>
-              Avatar with text and icon
-            </Typography>
-            <div className={classes.demo}>
-              <List dense={dense}>
-                {generate(
-                  <ListItem>
+    let listItems;
+    if(this.props.items){
+      listItems = this.props.items.map(listItem => {
+        //console.log(boring);
+        return (
+          <ListItem>
                     <ListItemAvatar>
                       <Avatar>
                         <FolderIcon />
                       </Avatar>
                     </ListItemAvatar>
                     <ListItemText
-                      primary="project"
+                      primary={listItem.title}
                       secondary={secondary ? 'Secondary text' : null}
                     />
                     <ListItemSecondaryAction>
-                      <IconButton aria-label="Delete">
+                      <IconButton aria-label="Delete" onClick={this.removeItem.bind(this, listItem)}>
                         <DeleteIcon />
                       </IconButton>
                     </ListItemSecondaryAction>
-                  </ListItem>,
-                )}
+          </ListItem>
+        );
+      });
+    }
+    console.log(this.props.items);
+
+    return (
+      <div className={classes.root}>
+          <Grid item xs={12} md={6}>
+            <Typography variant="title" className={classes.title}>
+              TODO: Put Borings/Projects Title Here?
+            </Typography>
+            <div className={classes.demo}>
+              <List dense={dense}>
+                {listItems}
               </List>
             </div>
           </Grid>
