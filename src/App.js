@@ -5,6 +5,7 @@ import Todos from './Components/Todos';
 import InteractiveList from './Components/InteractiveList';
 import ProjectsView from './Components/ProjectsView';
 import BoringsView from './Components/BoringsView';
+import BoringEditView from './Components/BoringEditView';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'; 
 import Button from 'material-ui/Button'; 
 import './App.css';
@@ -25,6 +26,9 @@ const styles = theme => ({
   menu: {
     width: 200,
   },
+  button: {
+    margin: theme.spacing.unit,
+  },
 });
 
 class App extends Component {
@@ -34,7 +38,8 @@ class App extends Component {
       todos: [],
       projects: [],
       activeView: "PROJECTS",
-      currentProject: null
+      currentProject: null,
+      currentBoring: null
     }
   }
 
@@ -57,23 +62,20 @@ class App extends Component {
   getProjects(){
     this.setState({
       projects: [{
-        title: "Project 1 title",
+        title: "Project 1",
         id: uuid.v4(),
         borings: [
             {
               id:uuid.v4(),
-              title: 'Boring 1',
-              category: 'Web Deisgn'
+              title: 'Boring 1'
             },
             {
               id:uuid.v4(),
-              title: 'Boring 2',
-              category: 'Mobile Development'
+              title: 'Boring 2'
             },
             {
               id:uuid.v4(),
-              title: 'Boring  3',
-              category: 'Web Development'
+              title: 'Boring  3'
             }
           ]
         }]
@@ -102,28 +104,84 @@ class App extends Component {
     this.setState({projects:projects});
   }
 
+  handleSelectProject(project) {
+    console.log("Project selected: ", project)
+    this.setState({currentProject:project, activeView: "BORINGS"});
+  }
+
+  handleAddBoring(boring){
+    let currentProject = this.state.currentProject;
+
+    if(currentProject == null) {
+      console.log("Error: null value")
+    }
+    else {
+      currentProject.borings.push(boring);
+      this.setState({
+        currentProject: currentProject, 
+        currentBoring: boring
+      });
+    }
+  }
+
+  handleRemoveBoring(boring) {
+    let currentProject = this.state.currentProject;
+
+    if(currentProject == null) {
+      console.log("Error: null value")
+    }
+    else {
+      let borings = this.state.currentProject.borings;
+      let index = borings.findIndex(x => x.id === boring.id);
+      borings.splice(index, 1);
+      this.setState({currentProject:currentProject});
+    }
+
+  }
+
+  handleSelectBoring(boring) {
+    console.log("Boring selected: ", boring)
+    this.setState({currentBoring:boring, activeView: "BORING EDIT"});
+  }
+
+
+
   render() {
     const { classes } = this.props;
+//        <MenuAppBar />
 
     return (
       <MuiThemeProvider>
       <div className="App">
 
-        <MenuAppBar />
-        
+
         {this.state.activeView === "PROJECTS" ? (
 
           <ProjectsView 
             projects={this.state.projects} 
             addProject={this.handleAddProject.bind(this)}
             removeProject={this.handleRemoveProject.bind(this)}
+            selectProject={this.handleSelectProject.bind(this)}
           />
 
         ) : this.state.activeView === "BORINGS" ? (
 
-          <BoringsView borings={this.state.currentProject.borings} />
+          <BoringsView 
+          projectName={this.state.currentProject.title}
+          borings={this.state.currentProject.borings}
+          addBoring={this.handleAddBoring.bind(this)}
+          removeBoring={this.handleRemoveBoring.bind(this)}
+          selectBoring={this.handleSelectBoring.bind(this)}
+          />
 
-        ) : null}
+        ) : this.state.activeView === "BORING EDIT" ? (
+
+          <BoringEditView 
+          boring={this.state.currentBoring}
+          projectName={this.state.currentProject.title}
+          />
+
+        ) : null }
 
       </div>
       </MuiThemeProvider>

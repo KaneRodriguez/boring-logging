@@ -3,16 +3,52 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import TextField from 'material-ui/TextField';
 import InteractiveList from './InteractiveList';
+import uuid from 'uuid';
+
 
 const styles = {
 };
 
 class BoringsView extends React.Component {
-  state = {
-  };
-  
+  constructor(props)
+  {
+    super(props);
+    this.state = {};
+
+    this.addBoring = this.addBoring.bind(this);
+    this.removeBoring = this.removeBoring.bind(this);
+    this.selectBoring = this.selectBoring.bind(this);
+
+    this.keyPress = this.keyPress.bind(this);
+  }
+
+  addBoring(boring) {
+    this.props.addBoring(boring);
+  }
+
+  removeBoring(boring) {
+    this.props.removeBoring(boring);
+  }
+
+  selectBoring(boring) {
+    this.props.selectBoring(boring);
+  }
+
+  keyPress(e) {
+    if(e.key === 'Enter' && e.target.value != "")
+    {
+      this.addBoring({
+        id:uuid.v4(),
+        title: e.target.value
+      });
+      e.target.value = '';
+      e.preventDefault();
+    }
+  }
+
   render() {
     const { classes } = this.props;
+    let listName = "Saved " + this.props.projectName + " Borings";
 
     return (
       <div className={classes.root}>
@@ -22,10 +58,14 @@ class BoringsView extends React.Component {
           placeholder="Boring Name"
           className={classes.textField}
           margin="normal"
+          onKeyPress={this.keyPress}
         />
-        <h3>Saved Borings</h3>
-        <hr />
-        <InteractiveList items={this.props.borings}/>
+        <InteractiveList 
+        listName={listName}
+        items={this.props.borings}
+        removeItem={this.removeBoring.bind(this)}
+        selectItem={this.selectBoring.bind(this)}
+        />
       </div>
     );
   }

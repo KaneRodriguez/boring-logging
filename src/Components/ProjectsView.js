@@ -16,6 +16,7 @@ class ProjectsView extends React.Component {
 
     this.addProject = this.addProject.bind(this);
     this.removeProject = this.removeProject.bind(this);
+    this.selectProject = this.selectProject.bind(this);
 
     this.keyPress = this.keyPress.bind(this);
   }
@@ -28,8 +29,12 @@ class ProjectsView extends React.Component {
     this.props.removeProject(project);
   }
 
+  selectProject(project) {
+    this.props.selectProject(project);
+  }
+
   keyPress(e) {
-    if(e.key === 'Enter')
+    if(e.key === 'Enter' && e.target.value != "")
     {
       this.addProject({
         id:uuid.v4(),
@@ -54,9 +59,12 @@ class ProjectsView extends React.Component {
           margin="normal"
           onKeyPress={this.keyPress}
         />
-        <h3>Saved Projects</h3>
-        <hr />
-        <InteractiveList items={this.props.projects} removeItem={this.removeProject.bind(this)}/>
+        <InteractiveList 
+        listName="Saved Projects"
+        items={this.props.projects} 
+        removeItem={this.removeProject.bind(this)}
+        selectItem={this.selectProject.bind(this)}
+        />
       </div>
     );
   }
@@ -65,6 +73,7 @@ class ProjectsView extends React.Component {
 ProjectsView.propTypes = {
   classes: PropTypes.object.isRequired,
   addProject: PropTypes.func,
+  selectProject: PropTypes.func,
   keyPress: PropTypes.func,
   projects: PropTypes.array
 };

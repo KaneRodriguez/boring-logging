@@ -49,6 +49,10 @@ class InteractiveList extends React.Component {
     this.props.removeItem(item);
   }
 
+  selectItem(item) {
+    this.props.selectItem(item);
+  }
+
   render() {
     const { classes } = this.props;
     const { dense, secondary } = this.state;
@@ -56,10 +60,9 @@ class InteractiveList extends React.Component {
     let listItems;
     if(this.props.items){
       listItems = this.props.items.map(listItem => {
-        //console.log(boring);
         return (
           <ListItem>
-                    <ListItemAvatar>
+                    <ListItemAvatar onClick={this.selectItem.bind(this, listItem)}>
                       <Avatar>
                         <FolderIcon />
                       </Avatar>
@@ -82,9 +85,12 @@ class InteractiveList extends React.Component {
     return (
       <div className={classes.root}>
           <Grid item xs={12} md={6}>
+          {this.props.listName ? (
             <Typography variant="title" className={classes.title}>
-              TODO: Put Borings/Projects Title Here?
+            {this.props.listName}
             </Typography>
+          ) : null}
+
             <div className={classes.demo}>
               <List dense={dense}>
                 {listItems}
@@ -98,6 +104,8 @@ class InteractiveList extends React.Component {
 
 InteractiveList.propTypes = {
   classes: PropTypes.object.isRequired,
+  removeItem: PropTypes.func,
+  selectItem: PropTypes.func
 };
 
 export default withStyles(styles)(InteractiveList);
