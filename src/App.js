@@ -12,6 +12,12 @@ import './App.css';
 import MenuAppBar from './Components/MenuAppBar';
 import TextField from 'material-ui/TextField';
 import { withStyles } from 'material-ui/styles';
+import { NavLink, Switch, Route } from 'react-router-dom';
+import {withRouter} from 'react-router';
+import BackupIcon from 'material-ui-icons/Backup';
+import Icon from 'material-ui/Icon';
+import IconButton from 'material-ui/IconButton';
+import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 
 const styles = theme => ({
   container: {
@@ -107,6 +113,7 @@ class App extends Component {
   handleSelectProject(project) {
     console.log("Project selected: ", project)
     this.setState({currentProject:project, activeView: "BORINGS"});
+    this.props.history.push("/borings");
   }
 
   handleAddBoring(boring){
@@ -141,47 +148,76 @@ class App extends Component {
 
   handleSelectBoring(boring) {
     console.log("Boring selected: ", boring)
-    this.setState({currentBoring:boring, activeView: "BORING EDIT"});
+    this.setState({currentBoring:boring});
+    this.props.history.push("/boring-edit");
   }
 
+  onArrowBackClicked(e) {
+    if(this.state.currentBoring)
+    {
+      this.setState({currentBoring: null});
+      this.props.history.push("/borings");
+    }
+    else if(this.state.currentProject)
+    {
+      this.setState({currentProject: null});
+      this.props.history.push("/projects")
+    }
+    else {
 
+    }
+  }
 
   render() {
     const { classes } = this.props;
-//        <MenuAppBar />
+//<MenuAppBar />
+
+    let currentProjectName = (this.state.currentProject ? this.state.currentProject.title : "");
+    let currentProjectBorings= (this.state.currentProject ? this.state.currentProject.borings : []);
 
     return (
       <MuiThemeProvider>
       <div className="App">
 
+      {this.state.currentProject ? (
+      <IconButton color="primary" className={classes.button} aria-label="Back"
+      onClick={this.onArrowBackClicked.bind(this)} >
+        <ArrowBackIcon />
+      </IconButton>
+      ): null}
 
-        {this.state.activeView === "PROJECTS" ? (
 
-          <ProjectsView 
+      <Switch>
+        <Route exact path='/projects' 
+          render={ (props) => 
+            <ProjectsView 
             projects={this.state.projects} 
             addProject={this.handleAddProject.bind(this)}
             removeProject={this.handleRemoveProject.bind(this)}
             selectProject={this.handleSelectProject.bind(this)}
-          />
-
-        ) : this.state.activeView === "BORINGS" ? (
-
+            />          
+          } 
+        />
+        <Route exact path='/borings' 
+        render={ (props) => 
           <BoringsView 
-          projectName={this.state.currentProject.title}
-          borings={this.state.currentProject.borings}
+          projectName={currentProjectName}
+          borings={currentProjectBorings}
           addBoring={this.handleAddBoring.bind(this)}
           removeBoring={this.handleRemoveBoring.bind(this)}
           selectBoring={this.handleSelectBoring.bind(this)}
-          />
-
-        ) : this.state.activeView === "BORING EDIT" ? (
-
-          <BoringEditView 
-          boring={this.state.currentBoring}
-          projectName={this.state.currentProject.title}
-          />
-
-        ) : null }
+          />       
+          } 
+        />        
+          <Route exact path='/boring-edit' 
+          render={ (props) => 
+            <BoringEditView 
+            boring={this.state.currentBoring}
+            projectName={this.state.currentProject.title}
+            />      
+          } 
+        />
+      </Switch>
 
       </div>
       </MuiThemeProvider>
@@ -191,4 +227,4 @@ class App extends Component {
 }
 //        <Todos todos={this.state.todos} />
 
-export default withStyles(styles)(App);
+export default withRouter(withStyles(styles)(App));
