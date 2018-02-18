@@ -43,7 +43,6 @@ class App extends Component {
     this.state = {
       todos: [],
       projects: [],
-      activeView: "PROJECTS",
       currentProject: null,
       currentBoring: null
     }
