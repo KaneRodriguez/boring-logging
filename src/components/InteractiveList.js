@@ -46,12 +46,12 @@ class InteractiveList extends React.Component {
     items: []
   };
 
-  removeItem(item) {
-    this.props.removeItem(item);
+  removeItem(key) {
+    this.props.removeItem(key);
   }
 
-  selectItem(item) {
-    this.props.selectItem(item);
+  selectItem(key) {
+    this.props.selectItem(key);
   }
 
   render() {
@@ -60,10 +60,11 @@ class InteractiveList extends React.Component {
 
     let listItems;
     if(this.props.items){
-      listItems = this.props.items.map(listItem => {
-        return (
-          <ListItem>
-                    <ListItemAvatar onClick={this.selectItem.bind(this, listItem)}>
+      listItems = Object.keys(this.props.items).map(key => {
+      let listItem = this.props.items[key]
+      return (
+          <ListItem key={key}>
+                    <ListItemAvatar onClick={this.selectItem.bind(this, key)}>
                       <Avatar>
                         <FolderIcon />
                       </Avatar>
@@ -73,7 +74,7 @@ class InteractiveList extends React.Component {
                       secondary={secondary ? 'Secondary text' : null}
                     />
                     <ListItemSecondaryAction>
-                      <IconButton aria-label="Delete" onClick={this.removeItem.bind(this, listItem)}>
+                      <IconButton aria-label="Delete" onClick={this.removeItem.bind(this, key)}>
                         <DeleteIcon />
                       </IconButton>
                     </ListItemSecondaryAction>
@@ -81,7 +82,6 @@ class InteractiveList extends React.Component {
         );
       });
     }
-    console.log(this.props.items);
 
     return (
       <div className={classes.root}>

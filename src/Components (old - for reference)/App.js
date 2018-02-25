@@ -1,53 +1,53 @@
 import React, { Component } from 'react';
 import uuid from 'uuid';
 import $ from 'jquery';
-import Todos from './Components/Todos';
-import InteractiveList from './Components/InteractiveList';
-import ProjectsView from './Components/ProjectsView';
-import BoringsView from './Components/BoringsView';
-import BoringEditView from './Components/BoringEditView';
+import Todos from './Todos';
+import InteractiveList from './InteractiveList';
+import ProjectsView from './ProjectsView';
+import BoringsView from './BoringsView';
+import BoringEditView from './BoringEditView';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'; 
 import Button from 'material-ui/Button'; 
-import './App.css';
-import MenuAppBar from './Components/MenuAppBar';
+import MenuAppBar from './MenuAppBar';
 import TextField from 'material-ui/TextField';
 import { withStyles } from 'material-ui/styles';
-import { NavLink, Switch, Route } from 'react-router-dom';
+// import { NavLink, Switch, Route } from 'react-router-dom';
 import {withRouter} from 'react-router';
 import BackupIcon from 'material-ui-icons/Backup';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 
-const styles = theme => ({
-  container: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
-  textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
-    width: 200,
-  },
-  menu: {
-    width: 200,
-  },
-  button: {
-    margin: theme.spacing.unit,
-  },
-});
+import {
+  BrowserRouter as Router,
+  Route,
+} from 'react-router-dom';
 
-class App extends Component {
-  constructor(){
-    super();
-    this.state = {
-      todos: [],
-      projects: [],
-      currentProject: null,
-      currentBoring: null
-    }
-  }
+import * as routes from '../constants/routes';
 
+import Navigation from './Navigation';
+import LandingPage from './Landing';
+import SignUpPage from './SignUp';
+import SignInPage from './SignIn';
+import PasswordForgetPage from './PasswordForget';
+import HomePage from './Home';
+import AccountPage from './Account';
+import LabelBottomNavigation from './Navigation'
+import withAuthentication from './withAuthentication';
+
+//export default App;
+
+// class App extends Component {
+//   constructor(){
+//     super();
+//     this.state = {
+//       todos: [],
+//       projects: [],
+//       currentProject: null,
+//       currentBoring: null
+//     }
+//   }
+/*
   getTodos(){
     $.ajax({
       url: 'https://jsonplaceholder.typicode.com/todos',
@@ -169,7 +169,7 @@ class App extends Component {
 
   render() {
     const { classes } = this.props;
-//<MenuAppBar />
+
 
     let currentProjectName = (this.state.currentProject ? this.state.currentProject.title : "");
     let currentProjectBorings= (this.state.currentProject ? this.state.currentProject.borings : []);
@@ -222,8 +222,8 @@ class App extends Component {
       </MuiThemeProvider>
 
     );
-  }
-}
+  }*/
+//<MenuAppBar />
 //        <Todos todos={this.state.todos} />
 
-export default withRouter(withStyles(styles)(App));
+export default withAuthentication(withStyles(styles)(App));
