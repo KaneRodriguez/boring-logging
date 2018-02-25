@@ -8,15 +8,8 @@ const applySetAuthUser = (state, action) => {
   if(!action.authUser) {
     doSignOut(); 
   } else {
-    // db.doCreateProject(action.authUser.uid, {title: 'project title!'})
-    // db.onceGetUserProjects(action.authUser.uid).then((snapshot) =>
-    // Object.keys(snapshot.val()).map(key =>
-    //   //console.log(snapshot.val()[key], key)
-    //   db.doCreateProjectBoring(action.authUser.uid, key, {title: 'boring title'})
-    // )
-    // );
-    
   }
+  
   return {
     ...state,
     authUser: action.authUser

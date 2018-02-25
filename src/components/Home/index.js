@@ -5,7 +5,9 @@ import { compose } from 'recompose';
 import withAuthorization from '../Session/withAuthorization';
 import { db } from '../../firebase';
 import InteractiveList from '../InteractiveList'
+import BoringView from '../BoringView'
 import TextField from 'material-ui/TextField'
+import SimpleMap from '../SimpleMap'
 
 class HomePage extends Component {
   componentDidMount() {
@@ -107,27 +109,26 @@ class HomePage extends Component {
 
   render() {
     const { users, projects, selectedProjectKey, selectedBoringKey} = this.props;
-
+// <SimpleMap />
     return (
       <div>
-        <h1>Home</h1>
-        <p>The Home Page is accessible by every signed in user.</p>
         {selectedBoringKey
         ?
-          <div>
-            Boring Key
-          </div>
+          <BoringView />
         :
           !selectedProjectKey
           ?
-            <ProjectsView 
+            <InteractiveListView 
+            name='Project'
             items={projects}
             removeItem={this.removeProject}
             selectItem={this.selectProject}
             keyPress={this.projectKeyPress}
             />
           :
-            <BoringsView
+            <InteractiveListView
+            name='Boring'
+            extraHeader={projects[selectedProjectKey].title}
             items={projects[selectedProjectKey].borings}
             removeItem={this.removeBoring}
             selectItem={this.selectBoring}
@@ -142,36 +143,18 @@ class HomePage extends Component {
   }
 }
 
-const ProjectsView = ({ items, removeItem, selectItem, keyPress }) =>
+const InteractiveListView = ({ name, items, removeItem, selectItem, keyPress, extraHeader }) =>
   <div>
-    <h2>My Projects</h2>
+    <h2>My {name}s {!!extraHeader ? ": " + extraHeader: ''}</h2>
     <TextField
     id="with-placeholder"
-    label="Add New Project"
-    placeholder="Project Name"
+    label={`Add New ${name}`}
+    placeholder={`${name} Name`}
     margin="normal"
     onKeyPress={keyPress}
     />  
     <InteractiveList 
-    listName="Saved Projects"
-    items={items} 
-    removeItem={removeItem}
-    selectItem={selectItem}
-    /> 
-  </div>
-
-const BoringsView = ({ items, removeItem, selectItem, keyPress }) =>
-  <div>
-    <h2>My Projects</h2>
-    <TextField
-      id="with-placeholder"
-      label="Add New Boring"
-      placeholder="Boring Name"
-      margin="normal"
-      onKeyPress={keyPress}
-    />  
-    <InteractiveList 
-    listName="Saved Borings"
+    listName={`Saved ${name}s`}
     items={items} 
     removeItem={removeItem}
     selectItem={selectItem}

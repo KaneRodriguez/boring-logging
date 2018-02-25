@@ -18,6 +18,9 @@ export const doCreateProject = (userUid, project) =>
 export const doRemoveProject = (userUid, projectUid) =>
   db.ref(`users/${userUid}/projects/${projectUid}`).set({});
 
+export const doUpdateProjectBoring = (userUid, projectUid, boringUid, keyValueObj) =>
+  db.ref(`users/${userUid}/projects/${projectUid}/borings/${boringUid}`).update(keyValueObj);
+
 export const doCreateProjectBoring = (userUid, projectUid, boring) =>
   db.ref(`users/${userUid}/projects/${projectUid}/borings`).push(boring);
 

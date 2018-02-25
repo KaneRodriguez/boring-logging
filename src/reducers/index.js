@@ -31,11 +31,20 @@ import userReducer from './user';
 //   }
 // }
 
+const INITIAL_NAV_REDUCER_STATE = {
+  anchorEl: null, 
+  geoLocationErrorMessage: null
+}
+
 const navReducer = (state={anchorEl: null}, action) => {
   switch(action.type) {
     case 'SET_NAV_MENU_ANCHOR': {
       return {...state, anchorEl: action.anchorEl}
     }
+    case 'SET_GEOLOCATION_FAILED': {
+      return {...state, geoLocationErrorMessage: action.error}
+    }
+    
     default: {
       return {...state}
     }
@@ -45,6 +54,8 @@ const INITIAL_PROJECTS_REDUCER_STATE = {
   projects: null, 
   selectedProjectKey: null,
   selectedBoringKey: null,
+  showingBoringInfo: null,
+  showingBoringSampleDescription: null,
 }
 
 const projectsReducer = (state=INITIAL_PROJECTS_REDUCER_STATE, action) => {
@@ -61,12 +72,26 @@ const projectsReducer = (state=INITIAL_PROJECTS_REDUCER_STATE, action) => {
     case 'BOTTOM_NAV_BACK_CLICKED': {
 
       switch(action.backTo) {
-        case 'Borings': return {...state, selectedBoringKey: null}
+        case 'Borings': return {...state, selectedBoringKey: null, showingBoringInfo: false}
         case 'Projects': return {...state, selectedProjectKey: null}
         default:
         return {...state}
       }
     }
+    case 'BORING_INFO_SHOW': {
+        return {...state, showingBoringInfo: action.showing}
+    }
+    case 'AUTH_USER_SET' : {
+      if(!action.authUser) {
+        return {...state, selectedBoringKey: null, selectedProjectKey: null, showingBoringInfo: false}
+      } else {
+        return {...state}
+      }
+    }
+    case 'BORING_SAMPLE_DESC_SHOW': {
+      return {...state, showingBoringSampleDescription: action.showing}
+    }
+    
     default: {
       return {...state}
     }

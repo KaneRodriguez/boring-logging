@@ -89,7 +89,7 @@ class MenuAppBar extends React.Component {
               )}
             </Menu>
             <Typography variant="title" color="inherit" className={classes.flex}>
-              Title
+              Boring Logging
             </Typography>
           </Toolbar>
         </AppBar>
