@@ -4,11 +4,10 @@ import { compose } from 'recompose';
 
 import withAuthorization from '../Session/withAuthorization';
 import { db } from '../../firebase';
-import InteractiveList from '../InteractiveList'
 import BoringView from '../BoringView'
 import TextField from 'material-ui/TextField'
 import SimpleMap from '../SimpleMap'
-import InteractiveListView from '../InteractiveListView'
+import {InteractiveList, InteractiveListWithAddButton} from '../InteractiveList'
 import Dictaphone from '../Dictaphone'
 
 class HomePage extends Component {
@@ -30,6 +29,8 @@ class HomePage extends Component {
     this.selectProject = this.selectProject.bind(this);
     this.removeBoring = this.removeBoring.bind(this);
     this.selectBoring = this.selectBoring.bind(this);
+    this.addBoring = this.addBoring.bind(this);
+    this.addProject = this.addProject.bind(this);
     this.editProjectTitle = this.editProjectTitle.bind(this);
     this.editBoringTitle = this.editBoringTitle.bind(this);
   }
@@ -84,6 +85,35 @@ class HomePage extends Component {
     const { authUser, onSetUserProjects } = this.props;
     
     db.doRemoveProject(authUser.uid, key).then((snapshot) => {
+      db.onceGetUserProjects(authUser.uid).then(snapshot =>
+        onSetUserProjects(snapshot.val())
+      );      
+    })
+  }
+
+  addProject() {
+    const { authUser, onSetUserProjects } = this.props;
+
+    let newProject = {
+      title: 'Click Here to Change Title'
+    }
+
+    db.doCreateProject(authUser.uid, newProject).then((snapshot) => {
+      db.onceGetUserProjects(authUser.uid).then(snapshot =>
+        onSetUserProjects(snapshot.val())
+      );      
+    })
+  }
+
+  addBoring() {
+    const { authUser, selectedProjectKey, onSetUserProjects } = this.props;
+
+    let newBoring = {
+      title: 'Click Here to Change Title'
+    }
+    
+    db.doCreateProjectBoring(authUser.uid, selectedProjectKey, newBoring)
+    .then((snapshot) => {
       db.onceGetUserProjects(authUser.uid).then(snapshot =>
         onSetUserProjects(snapshot.val())
       );      
@@ -152,7 +182,7 @@ class HomePage extends Component {
   }
 
   render() {
-    const { users, projects, selectedProjectKey, selectedBoringKey} = this.props;
+    const { users, projects, selectedProjectKey, selectedBoringKey, classes} = this.props;
         // <SimpleMap />
         // <Dictaphone />
     return (
@@ -164,16 +194,18 @@ class HomePage extends Component {
         :
           !selectedProjectKey
           ?
-            <InteractiveListView 
+            <InteractiveListWithAddButton 
             name='Project'
             items={projects}
             removeItem={this.removeProject}
             selectItem={this.selectProject}
             keyPress={this.projectKeyPress}
             editItemTitle={this.editProjectTitle}
+            addItem={this.addProject}
+            classes={classes}
             />
           :
-            <InteractiveListView
+            <InteractiveListWithAddButton
             name='Boring'
             extraHeader={projects[selectedProjectKey].title}
             items={projects[selectedProjectKey].borings}
@@ -181,6 +213,8 @@ class HomePage extends Component {
             selectItem={this.selectBoring}
             keyPress={this.boringKeyPress}
             editItemTitle={this.editBoringTitle}
+            addItem={this.addBoring}
+            classes={classes}
             />
           
         }

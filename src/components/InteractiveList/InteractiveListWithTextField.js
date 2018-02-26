@@ -3,8 +3,7 @@ import React from 'react'
 import InteractiveList from './InteractiveList'
 import TextField from 'material-ui/TextField'
 
-// TODO: Rename to InteractiveListWithTextField?
-const InteractiveListView = ({ name, items, removeItem, editItem, selectItem, keyPress, editItemTitle, extraHeader }) =>
+const InteractiveListWithTextField = ({ name, items, removeItem, editItem, selectItem, keyPress, editItemTitle, extraHeader }) =>
   <div>
     <h2>My {name}s {!!extraHeader ? ": " + extraHeader: ''}</h2>
     <TextField
@@ -24,4 +23,4 @@ const InteractiveListView = ({ name, items, removeItem, editItem, selectItem, ke
     /> 
   </div>
 
-export default InteractiveListView
+export default InteractiveListWithTextField

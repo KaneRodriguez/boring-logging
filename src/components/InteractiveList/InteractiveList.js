@@ -66,17 +66,14 @@ class InteractiveList extends React.Component {
 
   editItem(key) {
     if(this.props.editItem) {
-      console.log('calling editItem func above')
       this.props.editItem(key)
     } else {
       console.log('No editItem func given')
     }
-    console.log('editing the item ')
     this.setState({editKey: key})
   }
   editItemTitle(key, title) {
     if(this.props.editItemTitle) {
-      console.log('calling hoc function editItemTitle and clearing key')
       this.props.editItemTitle(key, title)
       this.setState({editKey: ''})
     } else {
@@ -87,10 +84,8 @@ class InteractiveList extends React.Component {
   itemEditKeyPress(e, key) {
     const { authUser, onSetUserProjects } = this.props;
  
-    console.log('pressed some key')
     if(e.key === 'Enter' && e.target.value !== "")
     {
-      console.log('pressed enter')
       this.editItemTitle(key, e.target.value);
       e.preventDefault();
     }

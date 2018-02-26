@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 
 import { db } from '../firebase';
-import InteractiveList from './InteractiveList'
+import {InteractiveList, InteractiveListWithAddButton} from './InteractiveList'
 import TextField from 'material-ui/TextField'
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
@@ -223,20 +223,6 @@ class BoringView extends Component {
     );
   }
 }
-
-const InteractiveListWithAddButton = ({name, items, removeItem, selectItem, editItemTitle, addItem, classes}) =>
-<div>
-    <InteractiveList 
-        listName={`Saved ${name}s`}
-        items={items} 
-        removeItem={removeItem}
-        selectItem={selectItem}
-        editItemTitle={editItemTitle}
-    /> 
-    <Button variant="fab" color='primary' onClick={addItem} className={classes.fab}>
-        <AddIcon />
-    </Button>
-</div>
 
 const mapStateToProps = (state) => ({
     projects: state.projectState.projects,
