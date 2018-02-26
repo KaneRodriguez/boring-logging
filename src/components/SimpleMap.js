@@ -16,16 +16,16 @@ const AnyReactComponent = ({ text }) => (
   
   class SimpleMap extends React.Component {
     static defaultProps = {
-      center: {lat: 59.95, lng: 30.33},
+      center: {lat: 38.8002324, lng: -90.3171687},
       zoom: 11
     };
 
     renderMarkers(map, maps) {
-        // let marker = new maps.Marker({
-        //   position: {lat: 59.95, lng: 30.33},
-        //   map,
-        //   title: 'Hello World!'
-        // });
+        let marker = new maps.Marker({
+          position: {lat: 38.8002324, lng: -90.3171687},
+          map,
+          title: 'Hello World!'
+        });
       }
 
     render() {
@@ -41,12 +41,12 @@ const AnyReactComponent = ({ text }) => (
           {/* 
           TODO: use code from project below
           https://github.com/istarkov/google-map-clustering-example/tree/master/src
-          
+          */
           <AnyReactComponent 
-            lat={59.955413} 
-            lng={30.337844} 
-            text={'Kreyser Avrora'} 
-          /> */}
+            lat={38.8002324} 
+            lng={-90.3171687} 
+            text={'Our Krib Yo'} 
+          /> }
         </GoogleMapReact>
         </div>
       );

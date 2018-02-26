@@ -56,6 +56,7 @@ const INITIAL_PROJECTS_REDUCER_STATE = {
   selectedBoringKey: null,
   showingBoringInfo: null,
   showingBoringSampleDescription: null,
+  selectedBoringSampleKey: null
 }
 
 const projectsReducer = (state=INITIAL_PROJECTS_REDUCER_STATE, action) => {
@@ -69,10 +70,13 @@ const projectsReducer = (state=INITIAL_PROJECTS_REDUCER_STATE, action) => {
     case 'USER_PROJECT_BORING_SELECT': {
       return {...state, selectedBoringKey: action.key}
     }
+    case 'BORING_SAMPLE_SELECT': {
+      return {...state, selectedBoringSampleKey: action.key}
+    }
     case 'BOTTOM_NAV_BACK_CLICKED': {
 
       switch(action.backTo) {
-        case 'Borings': return {...state, selectedBoringKey: null, showingBoringInfo: false}
+        case 'Borings': return {...state, selectedBoringKey: null, showingBoringInfo: false, showingBoringSampleDescription: false}
         case 'Projects': return {...state, selectedProjectKey: null}
         default:
         return {...state}

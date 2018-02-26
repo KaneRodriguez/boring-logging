@@ -10,16 +10,22 @@ export const doCreateUser = (id, username, email) =>
 export const onceGetUsers = () =>
   db.ref('users').once('value');
 
-// Other db APIs ... TODO: Is this blocking? Make asynchronous if it is
+// Other db APIs ...
 
 export const doCreateProject = (userUid, project) =>
   db.ref(`users/${userUid}/projects`).push(project);
 
 export const doRemoveProject = (userUid, projectUid) =>
   db.ref(`users/${userUid}/projects/${projectUid}`).set({});
+  
+export const doUpdateProject = (userUid, projectUid, keyValueObj) =>
+  db.ref(`users/${userUid}/projects/${projectUid}`).update(keyValueObj);
 
 export const doUpdateProjectBoring = (userUid, projectUid, boringUid, keyValueObj) =>
   db.ref(`users/${userUid}/projects/${projectUid}/borings/${boringUid}`).update(keyValueObj);
+
+export const doUpdateProjectBoringSample = (userUid, projectUid, boringUid, sampleUid, keyValueObj) =>
+  db.ref(`users/${userUid}/projects/${projectUid}/borings/${boringUid}/samples/${sampleUid}`).update(keyValueObj);
 
 export const doCreateProjectBoring = (userUid, projectUid, boring) =>
   db.ref(`users/${userUid}/projects/${projectUid}/borings`).push(boring);
@@ -29,6 +35,14 @@ export const doRemoveProjectBoring = (userUid, projectUid, boringUid) =>
 
 export const onceGetUserProjects = (userUid) => 
   db.ref(`users/${userUid}/projects`).once('value');
+
+export const doRemoveBoringSample = (userUid, projectUid, boringUid, sampleUid) =>
+  db.ref(`users/${userUid}/projects/${projectUid}/borings/${boringUid}/samples/${sampleUid}`).set({});
+
+export const doCreateBoringSample = (userUid, projectUid, boringUid, sample) =>
+  db.ref(`users/${userUid}/projects/${projectUid}/borings/${boringUid}/samples`).push(sample);
+   
+
 
 // export function loadProjects (authUser) {
 //   console.log('start loading projects')

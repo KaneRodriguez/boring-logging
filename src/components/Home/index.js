@@ -8,6 +8,8 @@ import InteractiveList from '../InteractiveList'
 import BoringView from '../BoringView'
 import TextField from 'material-ui/TextField'
 import SimpleMap from '../SimpleMap'
+import InteractiveListView from '../InteractiveListView'
+import Dictaphone from '../Dictaphone'
 
 class HomePage extends Component {
   componentDidMount() {
@@ -28,6 +30,48 @@ class HomePage extends Component {
     this.selectProject = this.selectProject.bind(this);
     this.removeBoring = this.removeBoring.bind(this);
     this.selectBoring = this.selectBoring.bind(this);
+    this.editProjectTitle = this.editProjectTitle.bind(this);
+    this.editBoringTitle = this.editBoringTitle.bind(this);
+  }
+  editProjectTitle(key, title) {
+    const { authUser, onSetUserProjects, projects } = this.props;
+    
+    if(projects[key]) {
+      let project = projects[key]
+      project.title = title;
+
+      db.doUpdateProject(authUser.uid, key, project).then((snapshot) => {
+        db.onceGetUserProjects(authUser.uid).then(snapshot =>
+          onSetUserProjects(snapshot.val())
+        );      
+      })
+    }
+  }
+
+  editBoringTitle(key, title) {
+    const { authUser, selectedProjectKey, onSetUserProjects, projects } = this.props;
+    
+    if(projects[selectedProjectKey] && projects[selectedProjectKey].borings 
+      && projects[selectedProjectKey].borings[key]) {
+      let boring = projects[selectedProjectKey].borings[key]
+      boring.title = title;
+
+      db.doUpdateProjectBoring(authUser.uid, selectedProjectKey, key, boring).then((snapshot) => {
+        db.onceGetUserProjects(authUser.uid).then(snapshot =>
+          onSetUserProjects(snapshot.val())
+        );      
+      })
+    }
+  }
+
+  removeProject(key) {
+    const { authUser, onSetUserProjects } = this.props;
+    
+    db.doRemoveProject(authUser.uid, key).then((snapshot) => {
+      db.onceGetUserProjects(authUser.uid).then(snapshot =>
+        onSetUserProjects(snapshot.val())
+      );      
+    })
   }
 
   selectProject(key) {
@@ -109,9 +153,11 @@ class HomePage extends Component {
 
   render() {
     const { users, projects, selectedProjectKey, selectedBoringKey} = this.props;
-// <SimpleMap />
+        // <SimpleMap />
+        // <Dictaphone />
     return (
       <div>
+        
         {selectedBoringKey
         ?
           <BoringView />
@@ -124,6 +170,7 @@ class HomePage extends Component {
             removeItem={this.removeProject}
             selectItem={this.selectProject}
             keyPress={this.projectKeyPress}
+            editItemTitle={this.editProjectTitle}
             />
           :
             <InteractiveListView
@@ -133,6 +180,7 @@ class HomePage extends Component {
             removeItem={this.removeBoring}
             selectItem={this.selectBoring}
             keyPress={this.boringKeyPress}
+            editItemTitle={this.editBoringTitle}
             />
           
         }
@@ -142,24 +190,6 @@ class HomePage extends Component {
     );
   }
 }
-
-const InteractiveListView = ({ name, items, removeItem, selectItem, keyPress, extraHeader }) =>
-  <div>
-    <h2>My {name}s {!!extraHeader ? ": " + extraHeader: ''}</h2>
-    <TextField
-    id="with-placeholder"
-    label={`Add New ${name}`}
-    placeholder={`${name} Name`}
-    margin="normal"
-    onKeyPress={keyPress}
-    />  
-    <InteractiveList 
-    listName={`Saved ${name}s`}
-    items={items} 
-    removeItem={removeItem}
-    selectItem={selectItem}
-    /> 
-  </div>
 
 const mapStateToProps = (state) => ({
   users: state.userState.users,

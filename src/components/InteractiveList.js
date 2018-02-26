@@ -16,6 +16,8 @@ import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import FolderIcon from 'material-ui-icons/Folder';
 import DeleteIcon from 'material-ui-icons/Delete';
+import Input from 'material-ui/Input/Input';
+import TextField from 'material-ui/TextField/TextField';
 
 
 const styles = theme => ({
@@ -31,33 +33,73 @@ const styles = theme => ({
   },
 });
 
-function generate(element) {
-  return [0, 1, 2].map(value =>
-    React.cloneElement(element, {
-      key: value,
-    }),
-  );
-}
-
+// TODO: this is for firebase objects, make it work with
+// other types of objects as well. HINT: fb items dont have the items.
 class InteractiveList extends React.Component {
   state = {
     dense: false,
     secondary: false,
-    items: []
+    items: [],
+    editKey: null,
   };
+  constructor(props) {
+    super(props)
 
+    this.itemEditKeyPress = this.itemEditKeyPress.bind(this)
+    this.editItemTitle = this.editItemTitle.bind(this)
+  }
   removeItem(key) {
-    this.props.removeItem(key);
+    if(this.props.removeItem) {
+      this.props.removeItem(key)
+    } else {
+      console.log('No removeItem func given')
+    }
   }
 
   selectItem(key) {
-    this.props.selectItem(key);
+    if(this.props.selectItem) {
+      this.props.selectItem(key)
+    } else {
+      console.log('No selectItem func given')
+    }
+  }
+
+  editItem(key) {
+    if(this.props.editItem) {
+      console.log('calling editItem func above')
+      this.props.editItem(key)
+    } else {
+      console.log('No editItem func given')
+    }
+    console.log('editing the item ')
+    this.setState({editKey: key})
+  }
+  editItemTitle(key, title) {
+    if(this.props.editItemTitle) {
+      console.log('calling hoc function editItemTitle and clearing key')
+      this.props.editItemTitle(key, title)
+      this.setState({editKey: ''})
+    } else {
+      console.log('No editItemTitle func given');
+    }
+  }
+
+  itemEditKeyPress(e, key) {
+    const { authUser, onSetUserProjects } = this.props;
+ 
+    console.log('pressed some key')
+    if(e.key === 'Enter' && e.target.value !== "")
+    {
+      console.log('pressed enter')
+      this.editItemTitle(key, e.target.value);
+      e.preventDefault();
+    }
   }
 
   render() {
     const { classes } = this.props;
-    const { dense, secondary } = this.state;
-
+    const { dense, secondary, editKey } = this.state;
+    
     let listItems;
     if(this.props.items){
       listItems = Object.keys(this.props.items).map(key => {
@@ -69,10 +111,22 @@ class InteractiveList extends React.Component {
                         <FolderIcon />
                       </Avatar>
                     </ListItemAvatar>
+                    {editKey !== key
+                    ?
                     <ListItemText
                       primary={listItem.title}
                       secondary={secondary ? 'Secondary text' : null}
+                      onClick={this.editItem.bind(this, key)}
                     />
+                    :
+                      <TextField 
+                      id="with-placeholder"
+                      label={listItem.title}
+                      placeholder={'New Title'}
+                      margin="normal"
+                      onKeyPress={(e)=> this.itemEditKeyPress(e, key)}
+                      />  
+                    }
                     <ListItemSecondaryAction>
                       <IconButton aria-label="Delete" onClick={this.removeItem.bind(this, key)}>
                         <DeleteIcon />
@@ -106,7 +160,8 @@ class InteractiveList extends React.Component {
 InteractiveList.propTypes = {
   classes: PropTypes.object.isRequired,
   removeItem: PropTypes.func,
-  selectItem: PropTypes.func
+  selectItem: PropTypes.func,
+  editItemTitle: PropTypes.func,
 };
 
 export default withStyles(styles)(InteractiveList);

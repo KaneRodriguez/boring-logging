@@ -7,6 +7,7 @@ import InteractiveList from './InteractiveList'
 import TextField from 'material-ui/TextField'
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
+import AddIcon from 'material-ui-icons/Add';
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import { FormControl, FormHelperText } from 'material-ui/Form';
 import classNames from 'classnames';
@@ -33,6 +34,10 @@ const styles = theme => ({
   withoutLabel: {
     marginTop: theme.spacing.unit * 3,
   },
+  fab: {
+    position: 'relative',
+    left: theme.spacing.unit * 2,
+  },
 });
  
 class BoringView extends Component {
@@ -42,7 +47,8 @@ class BoringView extends Component {
             driller: '',
             engineer: '',
             latitude: 0,
-            longitude: 0
+            longitude: 0,
+            samples: []
         }
     }
 
@@ -57,6 +63,11 @@ class BoringView extends Component {
     this.saveBoringInfo = this.saveBoringInfo.bind(this)
     this.handleBoringInfoChange = this.handleBoringInfoChange.bind(this)
     this.onAutoFillLocation = this.onAutoFillLocation.bind(this)
+
+    this.addBoringSample = this.addBoringSample.bind(this)
+    this.removeBoringSample = this.removeBoringSample.bind(this)
+    this.selectBoringSample = this.selectBoringSample.bind(this)
+    this.editBoringSampleTitle = this.editBoringSampleTitle.bind(this)
   }
 
   saveBoringInfo(event) {
@@ -97,6 +108,61 @@ class BoringView extends Component {
     this.setState({boring: {...this.state.boring, [name]: event.target.value}});
   };
 
+    addBoringSample(event) {
+        const { authUser, selectedProjectKey, selectedBoringKey, onSetUserProjects } = this.props;
+
+        // TODO: have button upon a dialogue instead?
+
+        let newSample = {
+            title: 'Click to enter project name'
+        }
+
+        db.doCreateBoringSample(authUser.uid, selectedProjectKey, selectedBoringKey, newSample).then((snapshot) => {
+            db.onceGetUserProjects(authUser.uid).then(snapshot =>
+                onSetUserProjects(snapshot.val())
+            );      
+        })
+    }
+
+    removeBoringSample(key) {
+        const { authUser, onSetUserProjects, selectedProjectKey, selectedBoringKey } = this.props;
+    
+        console.log("removing", key)
+        
+        db.doRemoveBoringSample(authUser.uid, selectedProjectKey, selectedBoringKey, key).then((snapshot) => {
+            db.onceGetUserProjects(authUser.uid).then(snapshot =>
+                onSetUserProjects(snapshot.val())
+            );      
+        })
+    }
+
+    editBoringSampleTitle(key, title) {
+        const { authUser, selectedProjectKey, selectedBoringKey, onSetUserProjects, projects } = this.props;
+        
+        if(projects[selectedProjectKey] 
+          && projects[selectedProjectKey].borings 
+          && projects[selectedProjectKey].borings[selectedBoringKey]
+          && projects[selectedProjectKey].borings[selectedBoringKey].samples
+          && projects[selectedProjectKey].borings[selectedBoringKey].samples[key]) {
+          let boringSample = projects[selectedProjectKey].borings[selectedBoringKey].samples[key]
+          boringSample.title = title;
+    
+          db.doUpdateProjectBoringSample(authUser.uid, selectedProjectKey, selectedBoringKey, key, boringSample).then((snapshot) => {
+            db.onceGetUserProjects(authUser.uid).then(snapshot =>
+              onSetUserProjects(snapshot.val())
+            );      
+          })
+        }
+      }
+
+    selectBoringSample(key) {
+        const { authUser, onSelectBoringSample } = this.props;
+    
+        console.log("selecting", key)
+        
+        onSelectBoringSample(key)
+    }
+
   render() {
     const { classes, authUser, selectedBoringKey, selectedProjectKey, onBoringSampleDescShow, 
         onSetUserProjects, projects, onBoringInfoShow, showingBoringInfo,
@@ -123,12 +189,14 @@ class BoringView extends Component {
             ?
             <div>
                 <h2>{project.title} : {boring.title} - Sample Desciption</h2>
-                <BoringSampleDescription 
+                <InteractiveListWithAddButton 
+                name={'Sample'}
+                items={boring.samples}
+                removeItem={this.removeBoringSample}
+                selectItem={this.selectBoringSample}
+                addItem={this.addBoringSample}
                 classes={classes}
-                onSave={this.saveBoringInfo}
-                handleChange={this.handleBoringInfoChange}
-                boring={this.state.boring}
-                onAutoFillLocation={this.onAutoFillLocation}
+                editItemTitle={this.editBoringSampleTitle}
                 />
             </div>
             :
@@ -156,9 +224,19 @@ class BoringView extends Component {
   }
 }
 
-const BoringSampleDescription = () =>
-<div>Sample Desc </div>
-
+const InteractiveListWithAddButton = ({name, items, removeItem, selectItem, editItemTitle, addItem, classes}) =>
+<div>
+    <InteractiveList 
+        listName={`Saved ${name}s`}
+        items={items} 
+        removeItem={removeItem}
+        selectItem={selectItem}
+        editItemTitle={editItemTitle}
+    /> 
+    <Button variant="fab" color='primary' onClick={addItem} className={classes.fab}>
+        <AddIcon />
+    </Button>
+</div>
 
 const mapStateToProps = (state) => ({
     projects: state.projectState.projects,
@@ -174,6 +252,7 @@ const mapDispatchToProps = (dispatch) => ({
     onBoringInfoShow: (showing) => dispatch({ type: 'BORING_INFO_SHOW', showing }),
     onBoringSampleDescShow: (showing) => dispatch({ type: 'BORING_SAMPLE_DESC_SHOW', showing }),
     onGeoLocationFailed: (error) => dispatch({ type: 'SET_GEOLOCATION_FAILED', error }),
+    onSelectBoringSample: (key) => dispatch({ type: 'BORING_SAMPLE_SELECT', key }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps) (

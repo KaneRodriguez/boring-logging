@@ -12,7 +12,8 @@ import { db } from '../../firebase';
 const styles = {
   root: {
     width: "100%",
-    align: "left"
+    align: "left",
+    bottom: '0px'
   },
 };
 
