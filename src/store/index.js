@@ -1,16 +1,22 @@
-import { applyMiddleware, createStore } from 'redux';
+import { applyMiddleware, createStore, compose } from 'redux';
 import rootReducer from '../reducers';
-
+import { reactReduxFirebase, firebaseReducer } from 'react-redux-firebase'
 import { createLogger } from "redux-logger"
-import thunk from "redux-thunk"
 import promise from "redux-promise-middleware"
+import * as firebase from 'firebase';
 
-const middleware = applyMiddleware(promise(), thunk, createLogger());
-const store = createStore(rootReducer, middleware);
+// react-redux-firebase options
+const reduxConfig = {
+  userProfile: 'users', // firebase root where user profiles are stored
+  enableLogging: true, // enable/disable Firebase's database logging
+}
 
-// store.dispatch({
-//     type: "FETCH_USERS",
-//     payload: axios.get("http://rest.learncode.academy/api/asdf/users")
-// })
+// Add redux Firebase to compose
+const createStoreWithFirebase = compose(
+  reactReduxFirebase(firebase, reduxConfig)
+)(createStore)
+
+const middleware = applyMiddleware(promise(), createLogger());
+const store = createStoreWithFirebase(rootReducer, middleware);
 
 export default store;

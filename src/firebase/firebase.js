@@ -26,12 +26,9 @@ if (!firebase.apps.length) {
   firebase.initializeApp(config);
 }
 
-const db = firebase.database();
 const auth = firebase.auth();
-const DB_SECRET = 'e7Dpd1qHmHq1PPIlWK3EH39pEVjlezjSITJ8FaKp';
+//const DB_SECRET = 'e7Dpd1qHmHq1PPIlWK3EH39pEVjlezjSITJ8FaKp';
 
 export {
-  db,
-  auth,
-  DB_SECRET,
+  auth
 };

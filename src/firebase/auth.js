@@ -1,5 +1,7 @@
 import { auth } from './firebase';
 
+// TODO: Remove the below functions and leverage the react-redux-firebase api instead
+
 // Sign Up
 export const doCreateUserWithEmailAndPassword = (email, password) =>
   auth.createUserWithEmailAndPassword(email, password);

@@ -5,19 +5,20 @@ import { withRouter } from 'react-router-dom';
 
 import { firebase } from '../../firebase';
 import * as routes from '../../constants/routes';
+import {getFirebase} from 'react-redux-firebase'
 
 const withAuthorization = (condition) => (Component) => {
   class WithAuthorization extends React.Component {
     componentDidMount() {
-      firebase.auth.onAuthStateChanged(authUser => {
-        if (!condition(authUser)) {
+      getFirebase().auth().onAuthStateChanged(authUser => {
+        if (!!!authUser) {
           this.props.history.push(routes.SIGN_IN);
         }
       });
     }
 
     render() {
-      return this.props.authUser ? <Component /> : null;
+      return !!getFirebase().auth() ? <Component /> : null;
     }
   }
 

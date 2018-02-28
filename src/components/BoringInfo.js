@@ -5,7 +5,7 @@ import Input, { InputLabel, InputAdornment } from 'material-ui/Input'
 import { FormControl, FormHelperText } from 'material-ui/Form'
 import classNames from 'classnames'
 
-const BoringInfo = ({classes, onSave, onAutoFillLocation, handleChange, boring}) => 
+const BoringInfo = ({classes, onAutoFillLocation, handleChange, boring}) => 
 <div>
         <GenericTextFormControl
             id='groundSurfaceElevationFt'
@@ -63,14 +63,6 @@ const BoringInfo = ({classes, onSave, onAutoFillLocation, handleChange, boring})
                 </Button>
                 }
         />
-
-    <Button 
-        color="secondary"
-        className={classes.button}
-        onClick={onSave}
-        variant="raised">
-        Save
-    </Button>
 </div>
 
 const GenericTextFormControl = ({classes, id, value, handleChange, helperText, endAdornment, endButton}) =>
@@ -81,7 +73,7 @@ const GenericTextFormControl = ({classes, id, value, handleChange, helperText, e
     <Input
     id={id}
     value={value}
-    onChange={handleChange(id)}
+    onChange={(e)=> handleChange(e, id)}
     endAdornment={endAdornment}
     />
     {endButton}

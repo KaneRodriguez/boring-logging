@@ -14,6 +14,7 @@ import classNames from 'classnames';
 // import GeoLocation from './GeoLocation'
 import {geolocated} from 'react-geolocated';
 import BoringInfo from './BoringInfo'
+import SampleFormDialog from './SampleFormDialog'
 
 const styles = theme => ({
   button: {
@@ -41,49 +42,17 @@ const styles = theme => ({
 });
  
 class BoringView extends Component {
-    state = {
-        boring: {
-            groundSurfaceElevationFt: 0,
-            driller: '',
-            engineer: '',
-            latitude: 0,
-            longitude: 0,
-            samples: []
-        }
-    }
 
   componentDidMount() {
-    const {selectedBoringKey, selectedProjectKey, projects} = this.props;
+    const {firebase, profile, selectedBoringKey, selectedProjectKey, projects} = this.props;
 
-    let project = projects[selectedProjectKey]
-    let boring = project.borings[selectedBoringKey]
-
-    this.state.boring = boring;
-
-    this.saveBoringInfo = this.saveBoringInfo.bind(this)
-    this.handleBoringInfoChange = this.handleBoringInfoChange.bind(this)
     this.onAutoFillLocation = this.onAutoFillLocation.bind(this)
 
-    this.addBoringSample = this.addBoringSample.bind(this)
-    this.removeBoringSample = this.removeBoringSample.bind(this)
     this.selectBoringSample = this.selectBoringSample.bind(this)
-    this.editBoringSampleTitle = this.editBoringSampleTitle.bind(this)
-  }
-
-  saveBoringInfo(event) {
-    const {authUser, selectedBoringKey, 
-        selectedProjectKey, onSetUserProjects} = this.props;
-
-    db.doUpdateProjectBoring(authUser.uid, selectedProjectKey, selectedBoringKey, this.state.boring)
-    .then((event)=> {
-        db.onceGetUserProjects(authUser.uid).then(snapshot =>
-            onSetUserProjects(snapshot.val()) // TODO: in the future, add listeners to our database so this wont be necessary
-        );    
-    })   
   }
 
   onAutoFillLocation(event) {
-      const {onGeoLocationFailed} = this.props;
+      const {firebase, selectedProjectKey, selectedBoringKey, onGeoLocationFailed} = this.props;
 
     // with geolocation we have access to:
     // this.props.coords.latitude  
@@ -99,77 +68,48 @@ class BoringView extends Component {
         onGeoLocationFailed('Geolocation is not enabled')
     }
     else {
-        // TODO: dispatch success? Loading?
-        this.setState({boring: {...this.state.boring, latitude: this.props.coords.latitude, longitude: this.props.coords.longitude}})
+        firebase.update(
+            `users/${firebase.auth().uid}/projects/${selectedProjectKey}/borings/${selectedBoringKey}`, 
+            { latitude: this.props.coords.latitude, longitude: this.props.coords.longitude}
+        )
     }
   }
 
-  handleBoringInfoChange = name => event => {
-    this.setState({boring: {...this.state.boring, [name]: event.target.value}});
-  };
-
-    addBoringSample(event) {
-        const { authUser, selectedProjectKey, selectedBoringKey, onSetUserProjects } = this.props;
-
-        // TODO: have button upon a dialogue instead?
-
-        let newSample = {
-            title: 'Click to enter project name'
-        }
-
-        db.doCreateBoringSample(authUser.uid, selectedProjectKey, selectedBoringKey, newSample).then((snapshot) => {
-            db.onceGetUserProjects(authUser.uid).then(snapshot =>
-                onSetUserProjects(snapshot.val())
-            );      
-        })
-    }
-
-    removeBoringSample(key) {
-        const { authUser, onSetUserProjects, selectedProjectKey, selectedBoringKey } = this.props;
-    
-        console.log("removing", key)
-        
-        db.doRemoveBoringSample(authUser.uid, selectedProjectKey, selectedBoringKey, key).then((snapshot) => {
-            db.onceGetUserProjects(authUser.uid).then(snapshot =>
-                onSetUserProjects(snapshot.val())
-            );      
-        })
-    }
-
-    editBoringSampleTitle(key, title) {
-        const { authUser, selectedProjectKey, selectedBoringKey, onSetUserProjects, projects } = this.props;
-        
-        if(projects[selectedProjectKey] 
-          && projects[selectedProjectKey].borings 
-          && projects[selectedProjectKey].borings[selectedBoringKey]
-          && projects[selectedProjectKey].borings[selectedBoringKey].samples
-          && projects[selectedProjectKey].borings[selectedBoringKey].samples[key]) {
-          let boringSample = projects[selectedProjectKey].borings[selectedBoringKey].samples[key]
-          boringSample.title = title;
-    
-          db.doUpdateProjectBoringSample(authUser.uid, selectedProjectKey, selectedBoringKey, key, boringSample).then((snapshot) => {
-            db.onceGetUserProjects(authUser.uid).then(snapshot =>
-              onSetUserProjects(snapshot.val())
-            );      
-          })
-        }
-      }
-
     selectBoringSample(key) {
-        const { authUser, onSelectBoringSample } = this.props;
-    
-        console.log("selecting", key)
-        
+        const { onSelectBoringSample } = this.props;
+            
         onSelectBoringSample(key)
     }
 
   render() {
-    const { classes, authUser, selectedBoringKey, selectedProjectKey, onBoringSampleDescShow, 
-        onSetUserProjects, projects, onBoringInfoShow, showingBoringInfo,
+    const { profile, classes, selectedBoringKey, selectedProjectKey, onBoringSampleDescShow, 
+        onSetUserProjects, firebase, onBoringInfoShow, showingBoringInfo,
     showingBoringSampleDescription} = this.props;
 
-    let project = projects[selectedProjectKey]
+    let project = profile.projects[selectedProjectKey]
     let boring = project.borings[selectedBoringKey]
+
+    let projectsPath = `users/${firebase.auth().uid}/projects/`
+    let boringsPath = projectsPath + `${selectedProjectKey}/borings/`
+    let samplesPath = boringsPath + `${selectedBoringKey}/samples/`
+
+    // TODO: only allow a change if enter key is pressed? 
+    const updateBoring = (event, name) => firebase.update(
+        boringsPath + selectedBoringKey, 
+        {[name]: event.target.value}
+    )
+
+    const updateBoringSample = (key, sample) => firebase.update(
+        samplesPath + key, 
+        sample
+    )
+
+    const addBoringSample = () => firebase.push(
+        samplesPath, 
+        {title: 'Click Here to Change Title'}
+    )
+    const removeBoringSample = (key) => firebase.remove(
+        samplesPath + key)
 
     return (
       <div>
@@ -179,9 +119,8 @@ class BoringView extends Component {
                 <h2>{project.title} : {boring.title} - Info</h2>
                 <BoringInfo 
                 classes={classes}
-                onSave={this.saveBoringInfo}
-                handleChange={this.handleBoringInfoChange}
-                boring={this.state.boring}
+                handleChange={updateBoring}
+                boring={boring}
                 onAutoFillLocation={this.onAutoFillLocation}
                 />
             </div>
@@ -192,11 +131,11 @@ class BoringView extends Component {
                 <InteractiveListWithAddButton 
                 name={'Sample'}
                 items={boring.samples}
-                removeItem={this.removeBoringSample}
+                removeItem={removeBoringSample}
                 selectItem={this.selectBoringSample}
-                addItem={this.addBoringSample}
+                addItem={addBoringSample}
                 classes={classes}
-                editItemTitle={this.editBoringSampleTitle}
+                editItemTitle={(key, title)=> updateBoringSample(key, {title: title})}
                 />
             </div>
             :
@@ -225,16 +164,13 @@ class BoringView extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    projects: state.projectState.projects,
     selectedProjectKey: state.projectState.selectedProjectKey,
     selectedBoringKey: state.projectState.selectedBoringKey,
     showingBoringInfo: state.projectState.showingBoringInfo,
     showingBoringSampleDescription: state.projectState.showingBoringSampleDescription,
-    authUser: state.sessionState.authUser,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    onSetUserProjects: (projects) => dispatch({ type: 'USER_PROJECTS_SET', projects }),
     onBoringInfoShow: (showing) => dispatch({ type: 'BORING_INFO_SHOW', showing }),
     onBoringSampleDescShow: (showing) => dispatch({ type: 'BORING_SAMPLE_DESC_SHOW', showing }),
     onGeoLocationFailed: (error) => dispatch({ type: 'SET_GEOLOCATION_FAILED', error }),
@@ -245,7 +181,7 @@ export default connect(mapStateToProps, mapDispatchToProps) (
     withStyles(styles)(
         geolocated({
             positionOptions: {
-              enableHighAccuracy: false,
+              enableHighAccuracy: true,
             },
             userDecisionTimeout: 5000,
           })(BoringView)

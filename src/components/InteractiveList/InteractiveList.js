@@ -82,7 +82,7 @@ class InteractiveList extends React.Component {
   }
 
   itemEditKeyPress(e, key) {
-    const { authUser, onSetUserProjects } = this.props;
+    const { onSetUserProjects } = this.props;
  
     if(e.key === 'Enter' && e.target.value !== "")
     {
