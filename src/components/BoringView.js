@@ -14,7 +14,8 @@ import classNames from 'classnames';
 // import GeoLocation from './GeoLocation'
 import {geolocated} from 'react-geolocated';
 import BoringInfo from './BoringInfo'
-import SampleFormDialog from './SampleFormDialog'
+import BoringSampleDescription from './BoringSampleDescription'
+import {getFirebase} from 'react-redux-firebase'
 
 const styles = theme => ({
   button: {
@@ -40,7 +41,7 @@ const styles = theme => ({
     left: theme.spacing.unit * 2,
   },
 });
- 
+
 class BoringView extends Component {
 
   componentDidMount() {
@@ -52,7 +53,7 @@ class BoringView extends Component {
   }
 
   onAutoFillLocation(event) {
-      const {firebase, selectedProjectKey, selectedBoringKey, onGeoLocationFailed} = this.props;
+      const {authUser, firebase, selectedProjectKey, selectedBoringKey, onGeoLocationFailed} = this.props;
 
     // with geolocation we have access to:
     // this.props.coords.latitude  
@@ -69,7 +70,7 @@ class BoringView extends Component {
     }
     else {
         firebase.update(
-            `users/${firebase.auth().uid}/projects/${selectedProjectKey}/borings/${selectedBoringKey}`, 
+            `users/${authUser.uid}/projects/${selectedProjectKey}/borings/${selectedBoringKey}`, 
             { latitude: this.props.coords.latitude, longitude: this.props.coords.longitude}
         )
     }
@@ -82,33 +83,33 @@ class BoringView extends Component {
     }
 
   render() {
-    const { profile, classes, selectedBoringKey, selectedProjectKey, onBoringSampleDescShow, 
+    const { authUser, profile, classes, selectedBoringKey, selectedProjectKey, onBoringSampleDescShow, 
         onSetUserProjects, firebase, onBoringInfoShow, showingBoringInfo,
     showingBoringSampleDescription} = this.props;
 
     let project = profile.projects[selectedProjectKey]
     let boring = project.borings[selectedBoringKey]
 
-    let projectsPath = `users/${firebase.auth().uid}/projects/`
+    let projectsPath = `users/${authUser.uid}/projects/`
     let boringsPath = projectsPath + `${selectedProjectKey}/borings/`
     let samplesPath = boringsPath + `${selectedBoringKey}/samples/`
 
     // TODO: only allow a change if enter key is pressed? 
-    const updateBoring = (event, name) => firebase.update(
+    let updateBoring = (event, name) => firebase.update(
         boringsPath + selectedBoringKey, 
         {[name]: event.target.value}
     )
 
-    const updateBoringSample = (key, sample) => firebase.update(
+    let updateBoringSample = (key, sample) => firebase.update(
         samplesPath + key, 
         sample
     )
 
-    const addBoringSample = () => firebase.push(
+    let addBoringSample = () => firebase.push(
         samplesPath, 
         {title: 'Click Here to Change Title'}
     )
-    const removeBoringSample = (key) => firebase.remove(
+    let removeBoringSample = (key) => firebase.remove(
         samplesPath + key)
 
     return (
@@ -126,18 +127,10 @@ class BoringView extends Component {
             </div>
             : !!showingBoringSampleDescription 
             ?
-            <div>
-                <h2>{project.title} : {boring.title} - Sample Desciption</h2>
-                <InteractiveListWithAddButton 
-                name={'Sample'}
-                items={boring.samples}
-                removeItem={removeBoringSample}
-                selectItem={this.selectBoringSample}
-                addItem={addBoringSample}
-                classes={classes}
-                editItemTitle={(key, title)=> updateBoringSample(key, {title: title})}
+                <BoringSampleDescription 
+                    firebase={firebase}
+                    profile={profile}
                 />
-            </div>
             :
             <div>
                 <h2>{project.title} : {boring.title}</h2>
@@ -168,6 +161,7 @@ const mapStateToProps = (state) => ({
     selectedBoringKey: state.projectState.selectedBoringKey,
     showingBoringInfo: state.projectState.showingBoringInfo,
     showingBoringSampleDescription: state.projectState.showingBoringSampleDescription,
+    authUser: state.sessionState.authUser
 });
 
 const mapDispatchToProps = (dispatch) => ({

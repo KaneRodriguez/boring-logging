@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { firebase } from '../firebase';
-import {getFirebase} from 'react-redux-firebase'
 
 const withAuthentication = (Component) => {
   class WithAuthentication extends React.Component {
@@ -21,7 +20,7 @@ const withAuthentication = (Component) => {
     }
 
     componentDidMount() {
-      getFirebase().auth().onAuthStateChanged(authUser => {
+      firebase.auth.onAuthStateChanged(authUser => {
         authUser
           ? this.setState(() => ({ authUser }))
           : this.setState(() => ({ authUser: null }));

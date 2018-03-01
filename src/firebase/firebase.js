@@ -30,5 +30,6 @@ const auth = firebase.auth();
 //const DB_SECRET = 'e7Dpd1qHmHq1PPIlWK3EH39pEVjlezjSITJ8FaKp';
 
 export {
-  auth
+  auth,
+  firebase
 };

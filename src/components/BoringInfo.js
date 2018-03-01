@@ -10,6 +10,7 @@ const BoringInfo = ({classes, onAutoFillLocation, handleChange, boring}) =>
         <GenericTextFormControl
             id='groundSurfaceElevationFt'
             classes={classes}
+            type="number"
             value={boring.groundSurfaceElevationFt}
             handleChange={handleChange}
             helperText='Ground Surface Elevation'
@@ -65,7 +66,7 @@ const BoringInfo = ({classes, onAutoFillLocation, handleChange, boring}) =>
         />
 </div>
 
-const GenericTextFormControl = ({classes, id, value, handleChange, helperText, endAdornment, endButton}) =>
+const GenericTextFormControl = ({classes, type, id, value, handleChange, helperText, endAdornment, endButton}) =>
 <FormControl
     className={classNames(classes.formControl, classes.withoutLabel)}
     aria-describedby={`${id}-helper-text`}
@@ -73,6 +74,7 @@ const GenericTextFormControl = ({classes, id, value, handleChange, helperText, e
     <Input
     id={id}
     value={value}
+    //type={type ? type : ''}
     onChange={(e)=> handleChange(e, id)}
     endAdornment={endAdornment}
     />
@@ -81,3 +83,7 @@ const GenericTextFormControl = ({classes, id, value, handleChange, helperText, e
 </FormControl>   
 
 export default BoringInfo
+
+export {
+    GenericTextFormControl
+}

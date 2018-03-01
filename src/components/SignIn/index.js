@@ -6,6 +6,7 @@ import { PasswordForgetLink } from '../PasswordForget';
 import { auth } from '../../firebase';
 import * as routes from '../../constants/routes';
 import TextField from 'material-ui/TextField';
+import {getFirebase} from 'react-redux-firebase'
 
 const SignInPage = ({ history }) =>
   <div>
@@ -41,15 +42,20 @@ class SignInForm extends Component {
     const {
       history,
     } = this.props;
+  // Sign In
 
-    auth.doSignInWithEmailAndPassword(email, password)
-      .then(() => {
-        this.setState(() => ({ ...INITIAL_STATE }));
-        history.push(routes.HOME);
-      })
-      .catch(error => {
-        this.setState(updateByPropertyName('error', error));
-      });
+  getFirebase().login({email: email, password: password}).then(() => {
+    this.setState(() => ({ ...INITIAL_STATE }));
+    history.push(routes.HOME);
+  })
+  .catch(error => {
+    this.setState(updateByPropertyName('error', error));
+  });
+
+  // export const doSignInWithEmailAndPassword = (email, password) =>
+  //   auth.signInWithEmailAndPassword(email, password);
+  //   auth.doSignInWithEmailAndPassword(email, password)
+
 
     event.preventDefault();
   }

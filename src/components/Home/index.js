@@ -15,12 +15,13 @@ import Todos from '../Todos';
 import { CircularProgress } from 'material-ui/Progress';
 
 class HomePage extends Component {
+
   render() {
-    const { onSelectProject, onSelectProjectBoring, firebase, users, projects, selectedProjectKey, selectedBoringKey, classes, profile} = this.props;
+    const { authUser, onSelectProject, onSelectProjectBoring, firebase, users, projects, selectedProjectKey, selectedBoringKey, classes, profile} = this.props;
         // <SimpleMap />
         // <Dictaphone />
         // <Webcam />
-    let projectsPath = `users/${firebase.auth().uid}/projects/`
+    let projectsPath = `users/${authUser.uid}/projects/`
     let boringsPath = projectsPath + `${selectedProjectKey}/borings/`
 
     const addProject = () => firebase.push(projectsPath, {title: 'Click Here to Change Title'})
@@ -69,6 +70,7 @@ class HomePage extends Component {
 const mapStateToProps = (state) => ({
   selectedProjectKey: state.projectState.selectedProjectKey,
   selectedBoringKey: state.projectState.selectedBoringKey,
+  authUser: state.sessionState.authUser,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -76,7 +78,7 @@ const mapDispatchToProps = (dispatch) => ({
   onSelectProjectBoring: (key) => dispatch({ type: 'USER_PROJECT_BORING_SELECT', key }),
 });
 
-const authCondition = !!getFirebase().auth()
+const authCondition = (authUser) => !!authUser
 
 export default compose(
   withAuthorization(authCondition),

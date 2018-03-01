@@ -10,8 +10,6 @@ import List, {
 } from 'material-ui/List';
 import Avatar from 'material-ui/Avatar';
 import IconButton from 'material-ui/IconButton';
-import { FormGroup, FormControlLabel } from 'material-ui/Form';
-import Checkbox from 'material-ui/Checkbox';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import FolderIcon from 'material-ui-icons/Folder';
