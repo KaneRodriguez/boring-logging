@@ -5,7 +5,7 @@ import Input, { InputLabel, InputAdornment } from 'material-ui/Input'
 import { FormControl, FormHelperText } from 'material-ui/Form'
 import classNames from 'classnames'
 
-const BoringInfo = ({classes, onAutoFillLocation, handleChange, boring}) => 
+const BoringInfoInputForms = ({classes, onAutoFillLocation, handleChange, boring}) => 
 <div>
         <GenericTextFormControl
             id='groundSurfaceElevationFt'
@@ -65,7 +65,7 @@ const BoringInfo = ({classes, onAutoFillLocation, handleChange, boring}) =>
                 }
         />
 </div>
-
+// TODO make one for textfields? Rename to GenericInputFormControl
 const GenericTextFormControl = ({classes, type, id, value, handleChange, helperText, endAdornment, endButton}) =>
 <FormControl
     className={classNames(classes.formControl, classes.withoutLabel)}
@@ -74,7 +74,7 @@ const GenericTextFormControl = ({classes, type, id, value, handleChange, helperT
     <Input
     id={id}
     value={value}
-    //type={type ? type : ''}
+    type={type ? type : ''}
     onChange={(e)=> handleChange(e, id)}
     endAdornment={endAdornment}
     />
@@ -82,7 +82,7 @@ const GenericTextFormControl = ({classes, type, id, value, handleChange, helperT
     <FormHelperText id={`${id}-helper-text`}>{helperText}</FormHelperText>
 </FormControl>   
 
-export default BoringInfo
+export default BoringInfoInputForms
 
 export {
     GenericTextFormControl

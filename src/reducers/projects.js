@@ -3,7 +3,7 @@ const INITIAL_PROJECTS_REDUCER_STATE = {
     selectedProjectKey: null,
     selectedBoringKey: null,
     showingBoringInfo: null,
-    showingBoringSampleDescription: null,
+    showingBoringSamples: null,
     selectedBoringSampleKey: null
   }
   
@@ -24,7 +24,7 @@ const INITIAL_PROJECTS_REDUCER_STATE = {
       case 'BOTTOM_NAV_BACK_CLICKED': {
   
         switch(action.backTo) {
-          case 'Borings': return {...state, selectedBoringKey: null, showingBoringInfo: false, showingBoringSampleDescription: false}
+          case 'Borings': return {...state, selectedBoringKey: null, showingBoringInfo: false, showingBoringSamples: false}
           case 'Projects': return {...state, selectedProjectKey: null}
           default:
           return {...state}
@@ -41,7 +41,7 @@ const INITIAL_PROJECTS_REDUCER_STATE = {
         }
       }
       case 'BORING_SAMPLE_DESC_SHOW': {
-        return {...state, showingBoringSampleDescription: action.showing}
+        return {...state, showingBoringSamples: action.showing}
       }
       
       default: {

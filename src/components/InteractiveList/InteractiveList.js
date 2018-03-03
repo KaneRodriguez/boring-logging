@@ -16,7 +16,8 @@ import FolderIcon from 'material-ui-icons/Folder';
 import DeleteIcon from 'material-ui-icons/Delete';
 import Input from 'material-ui/Input/Input';
 import TextField from 'material-ui/TextField/TextField';
-
+import Button from 'material-ui/Button';
+import AddIcon from 'material-ui-icons/Add';
 
 const styles = theme => ({
   root: {
@@ -120,6 +121,31 @@ class InteractiveList extends React.Component {
                       onKeyPress={(e)=> this.itemEditKeyPress(e, key)}
                       />  
                     }
+                    { !!this.props.bonusButtonOneTitle
+                    ? <ListItemIcon>
+                      <Button 
+                        variant="raised"
+                        size="small"
+                        color="primary"
+                        margin="normal"
+                        onClick={(e)=> this.props.bonusButtonOneOnClick(key)}
+                        >
+                      {this.props.bonusButtonOneTitle}
+                      </Button>
+                    </ListItemIcon> : null }
+                    { !!this.props.bonusButtonTwoTitle
+                    ? <ListItemIcon>
+                      <Button 
+                        variant="raised"
+                        size="small"
+                        color="primary"
+                        margin="normal"
+                        onClick={(e)=> this.props.bonusButtonTwoOnClick(key)}
+                        >
+                      {this.props.bonusButtonTwoTitle}
+                      </Button>
+                    </ListItemIcon> : null }
+                    
                     <ListItemSecondaryAction>
                       <IconButton aria-label="Delete" onClick={this.removeItem.bind(this, key)}>
                         <DeleteIcon />

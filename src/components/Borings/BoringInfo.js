@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 
-import { db } from '../firebase';
-import {InteractiveList, InteractiveListWithAddButton} from './InteractiveList'
 import TextField from 'material-ui/TextField'
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
@@ -13,10 +11,11 @@ import { FormControl, FormHelperText } from 'material-ui/Form';
 import classNames from 'classnames';
 // import GeoLocation from './GeoLocation'
 import {geolocated} from 'react-geolocated';
-import BoringInfo from './BoringInfo'
-import BoringSampleDescription from './BoringSampleDescription'
+import BoringInfoInputForms from './BoringInfoInputForms'
+// import BoringSampleDescription from './BoringSampleDescription'
 import {getFirebase} from 'react-redux-firebase'
-
+import { withFirebase } from 'react-redux-firebase'
+import FullScreenDialog from '../Dialog'
 const styles = theme => ({
   button: {
     margin: theme.spacing.unit,
@@ -42,13 +41,29 @@ const styles = theme => ({
   },
 });
 
-class BoringView extends Component {
+class BoringInfo extends Component {
+
+    state = {
+        tmpBoring: {
+            groundSurfaceElevationFt: null,
+            driller: null,
+            engineer: null,
+            latitude: null,
+            longitude: null,
+        }
+    }
 
   componentDidMount() {
-    const {firebase, profile, selectedBoringKey, selectedProjectKey, projects} = this.props;
+    const { profile, selectedBoringKey, selectedProjectKey } = this.props;
+
+    let project = profile.projects[selectedProjectKey]
+    let boring = project.borings[selectedBoringKey]
+
+    let tmpBoring = JSON.parse(JSON.stringify(boring)); // we want a clone, not a copy of the reference
+
+    this.setState({tmpBoring: tmpBoring})
 
     this.onAutoFillLocation = this.onAutoFillLocation.bind(this)
-
     this.selectBoringSample = this.selectBoringSample.bind(this)
   }
 
@@ -69,10 +84,12 @@ class BoringView extends Component {
         onGeoLocationFailed('Geolocation is not enabled')
     }
     else {
-        firebase.update(
-            `users/${authUser.uid}/projects/${selectedProjectKey}/borings/${selectedBoringKey}`, 
-            { latitude: this.props.coords.latitude, longitude: this.props.coords.longitude}
-        )
+        let tmpBoring = this.state.tmpBoring;
+        tmpBoring.latitude = this.props.coords.latitude
+        tmpBoring.longitude = this.props.coords.longitude
+
+        this.setState({tmpBoring: tmpBoring})
+
     }
   }
 
@@ -85,7 +102,7 @@ class BoringView extends Component {
   render() {
     const { authUser, profile, classes, selectedBoringKey, selectedProjectKey, onBoringSampleDescShow, 
         onSetUserProjects, firebase, onBoringInfoShow, showingBoringInfo,
-    showingBoringSampleDescription} = this.props;
+    showingBoringSamples} = this.props;
 
     let project = profile.projects[selectedProjectKey]
     let boring = project.borings[selectedBoringKey]
@@ -95,10 +112,16 @@ class BoringView extends Component {
     let samplesPath = boringsPath + `${selectedBoringKey}/samples/`
 
     // TODO: only allow a change if enter key is pressed? 
-    let updateBoring = (event, name) => firebase.update(
+    let updateBoring = (obj) => firebase.update(
         boringsPath + selectedBoringKey, 
-        {[name]: event.target.value}
+        obj
     )
+
+    let updateTmpBoring = (event, name) => {
+        let tmpBoring = this.state.tmpBoring;
+        tmpBoring[name] = event.target.value;
+        this.setState({tmpBoring: tmpBoring})
+    }
 
     let updateBoringSample = (key, sample) => firebase.update(
         samplesPath + key, 
@@ -112,45 +135,34 @@ class BoringView extends Component {
     let removeBoringSample = (key) => firebase.remove(
         samplesPath + key)
 
+    let onSaveSampleDesc = () => {
+        updateBoring(this.state.tmpBoring)
+        onBoringInfoShow(false)
+    }
+
+    let onCloseDialog = () => {        
+        this.setState({tmpBoring: {}})
+        onBoringInfoShow(false)
+    }
+
     return (
       <div>
-          {!!showingBoringInfo 
-            ?
-            <div>
-                <h2>{project.title} : {boring.title} - Info</h2>
-                <BoringInfo 
-                classes={classes}
-                handleChange={updateBoring}
-                boring={boring}
-                onAutoFillLocation={this.onAutoFillLocation}
+        <FullScreenDialog 
+            title="Boring Info"
+            fullScreen={true}
+            open={showingBoringInfo}
+            onClose={(e)=> onCloseDialog()}
+            onSave={(e)=> onSaveSampleDesc()}
+            pageContent={
+                <BoringInfoInputForms 
+                    classes={classes}
+                    handleChange={updateTmpBoring}
+                    boring={this.state.tmpBoring}
+                    onAutoFillLocation={this.onAutoFillLocation}
                 />
-            </div>
-            : !!showingBoringSampleDescription 
-            ?
-                <BoringSampleDescription 
-                    firebase={firebase}
-                    profile={profile}
-                />
-            :
-            <div>
-                <h2>{project.title} : {boring.title}</h2>
-                <Button 
-                color="primary"
-                className={classes.button}
-                onClick={(event)=> onBoringInfoShow(true)}
-                variant="raised"
-                >
-                 Boring Info
-                </Button>
-                <Button 
-                color="primary"
-                className={classes.button}
-                onClick={(event)=> onBoringSampleDescShow(true)}
-                variant="raised">
-                 Sample Description
-                </Button>
-            </div>
             }
+        />
+
       </div>
     );
   }
@@ -160,7 +172,7 @@ const mapStateToProps = (state) => ({
     selectedProjectKey: state.projectState.selectedProjectKey,
     selectedBoringKey: state.projectState.selectedBoringKey,
     showingBoringInfo: state.projectState.showingBoringInfo,
-    showingBoringSampleDescription: state.projectState.showingBoringSampleDescription,
+    showingBoringSamples: state.projectState.showingBoringSamples,
     authUser: state.sessionState.authUser
 });
 
@@ -178,5 +190,5 @@ export default connect(mapStateToProps, mapDispatchToProps) (
               enableHighAccuracy: true,
             },
             userDecisionTimeout: 5000,
-          })(BoringView)
+          })(BoringInfo)
     ));

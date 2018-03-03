@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
 import Dialog from 'material-ui/Dialog';
-import List, { ListItem, ListItemText } from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
@@ -11,21 +10,21 @@ import IconButton from 'material-ui/IconButton';
 import Typography from 'material-ui/Typography';
 import CloseIcon from 'material-ui-icons/Close';
 import Slide from 'material-ui/transitions/Slide';
-import {GenericTextFormControl} from './BoringInfo'
+import TextField from 'material-ui/TextField';
 
-const styles = {
+const styles = theme => ({
   appBar: {
     position: 'relative',
   },
   flex: {
     flex: 1,
-  },
-};
+  }
+});
 
 function Transition(props) {
   return <Slide direction="up" {...props} />;
 }
-
+// todo: maybe rename to AdjustableScreenDialog and have the fullscreen attribute below be passed in?
 class FullScreenDialog extends React.Component {
   state = {
     open: false,
@@ -40,46 +39,29 @@ class FullScreenDialog extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { fullScreen, classes, pageContent, title, open, onClose, onSave } = this.props;
     return (
       <div>
-        <Button onClick={this.handleClickOpen}>Open full-screen dialog</Button>
         <Dialog
-          fullScreen
-          open={this.state.open}
-          onClose={this.handleClose}
+          fullScreen={fullScreen}
+          open={open}
+          onClose={onClose}
           transition={Transition}
         >
           <AppBar className={classes.appBar}>
             <Toolbar>
-              <IconButton color="inherit" onClick={this.handleClose} aria-label="Close">
+              <IconButton color="inherit" onClick={onClose} aria-label="Close">
                 <CloseIcon />
               </IconButton>
               <Typography variant="title" color="inherit" className={classes.flex}>
-                Sound
+                {title ? title : ''}
               </Typography>
-              <Button color="inherit" onClick={this.handleClose}>
+              <Button color="inherit" onClick={onSave}>
                 save
               </Button>
             </Toolbar>
           </AppBar>
-
-          <List>
-            <ListItem>
-              <GenericTextFormControl
-              id='engineer'
-              classes={classes}
-              type="number"
-              value={'test' }//boring.engineer}
-              //handleChange={handleChange}
-              helperText='Engineer'
-              />            
-            </ListItem>
-            <Divider />
-            <ListItem button>
-              <ListItemText primary="Default notification ringtone" secondary="Tethys" />
-            </ListItem>
-          </List>
+          {pageContent}
         </Dialog>
       </div>
     );
@@ -87,7 +69,12 @@ class FullScreenDialog extends React.Component {
 }
 
 FullScreenDialog.propTypes = {
+  title: PropTypes.string,
+  //open: PropTypes.bool.isRequired,TODO
   classes: PropTypes.object.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  // pageContent: PropTypes.isRequired,TODO
 };
 
 export default withStyles(styles)(FullScreenDialog);
