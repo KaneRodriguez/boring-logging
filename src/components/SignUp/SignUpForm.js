@@ -9,6 +9,8 @@ import { firebaseConnect, withFirebase, isLoaded } from 'react-redux-firebase'
 
 import { auth } from '../../firebase';
 import * as routes from '../../constants/routes';
+import TextField from 'material-ui/TextField';
+import Button from 'material-ui/Button';
 
 const updateByPropertyName = (propertyName, value) => () => ({
   [propertyName]: value,
@@ -80,33 +82,51 @@ class SignUpForm extends Component {
 
     return (
       <form onSubmit={this.onSubmit}>
-        <input
+        <TextField
           value={username}
+          label="Full Name"
           onChange={event => this.setState(updateByPropertyName('username', event.target.value))}
           type="text"
           placeholder="Full Name"
+          margin="normal"
+
         />
-        <input
+        <TextField
           value={email}
+          label="Email Address"
           onChange={event => this.setState(updateByPropertyName('email', event.target.value))}
           type="text"
           placeholder="Email Address"
+          margin="normal"
+
         />
-        <input
+        <TextField
           value={passwordOne}
+          label="Password"
           onChange={event => this.setState(updateByPropertyName('passwordOne', event.target.value))}
           type="password"
           placeholder="Password"
+          margin="normal"
+
         />
-        <input
+        <TextField
           value={passwordTwo}
+          label="Confirm Password"
           onChange={event => this.setState(updateByPropertyName('passwordTwo', event.target.value))}
           type="password"
           placeholder="Confirm Password"
+          margin="normal"
+
         />
-        <button disabled={isInvalid} type="submit">
+
+        <Button 
+          variant="raised" 
+          color="primary" 
+          //disabled={isInvalid} 
+          type="submit"
+        >
           Sign Up
-        </button>
+        </Button>
 
         { error && <p>{error.message}</p> }
       </form>

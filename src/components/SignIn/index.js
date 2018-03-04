@@ -7,6 +7,7 @@ import { auth } from '../../firebase';
 import * as routes from '../../constants/routes';
 import TextField from 'material-ui/TextField';
 import {getFirebase} from 'react-redux-firebase'
+import Button from 'material-ui/Button';
 
 const SignInPage = ({ history }) =>
   <div>
@@ -80,15 +81,26 @@ class SignInForm extends Component {
           onChange={event => this.setState(updateByPropertyName('email', event.target.value))}
           margin="normal"
         />
-        <input
+
+        <TextField
+          type="password"
+          id="password"
+          label="Password"
           value={password}
           onChange={event => this.setState(updateByPropertyName('password', event.target.value))}
-          type="password"
-          placeholder="Password"
+          margin="normal"
         />
-        <button disabled={isInvalid} type="submit">
+
+        <Button 
+          variant="raised" 
+          color="primary" 
+          //disabled={isInvalid} 
+          type="submit"
+        >
           Sign In
-        </button>
+        </Button>
+
+
 
         { error && <p>{error.message}</p> }
       </form>

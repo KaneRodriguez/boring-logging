@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 
 import { auth } from '../../firebase';
 import * as routes from '../../constants/routes';
+import TextField from 'material-ui/TextField';
+import Button from 'material-ui/Button';
 
 const PasswordForgetPage = () =>
   <div>
@@ -50,22 +52,33 @@ class PasswordForgetForm extends Component {
 
     return (
       <form onSubmit={this.onSubmit}>
-        <input
+        
+        <TextField
           value={this.state.email}
           onChange={event => this.setState(updateByPropertyName('email', event.target.value))}
+      //id="password"
+          label="email address"
+          //className={classes.textField}
           type="text"
+          //autoComplete="current-password"
+          margin="normal"
           placeholder="Email Address"
-        />
-        <button disabled={isInvalid} type="submit">
-          Reset My Password
-        </button>
 
+        />
+        <Button 
+          variant="raised" 
+          color="primary" 
+          disabled={isInvalid} 
+          type="submit"
+        >
+          Reset My Password
+        </Button> 
+        
         { error && <p>{error.message}</p> }
       </form>
     );
   }
 }
-
 const PasswordForgetLink = () =>
   <p>
     <Link to={routes.PASSWORD_FORGET}>Forgot Password?</Link>
