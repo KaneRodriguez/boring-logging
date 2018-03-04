@@ -14,10 +14,8 @@ import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import FolderIcon from 'material-ui-icons/Folder';
 import DeleteIcon from 'material-ui-icons/Delete';
-import Input from 'material-ui/Input/Input';
 import TextField from 'material-ui/TextField/TextField';
 import Button from 'material-ui/Button';
-import AddIcon from 'material-ui-icons/Add';
 
 const styles = theme => ({
   root: {
@@ -80,9 +78,7 @@ class InteractiveList extends React.Component {
     }
   }
 
-  itemEditKeyPress(e, key) {
-    const { onSetUserProjects } = this.props;
- 
+  itemEditKeyPress(e, key) { 
     if(e.key === 'Enter' && e.target.value !== "")
     {
       this.editItemTitle(key, e.target.value);
@@ -145,7 +141,7 @@ class InteractiveList extends React.Component {
                       {this.props.bonusButtonTwoTitle}
                       </Button>
                     </ListItemIcon> : null }
-                    
+
                     <ListItemSecondaryAction>
                       <IconButton aria-label="Delete" onClick={this.removeItem.bind(this, key)}>
                         <DeleteIcon />

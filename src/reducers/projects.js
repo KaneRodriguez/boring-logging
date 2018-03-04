@@ -4,7 +4,7 @@ const INITIAL_PROJECTS_REDUCER_STATE = {
     selectedBoringKey: null,
     showingBoringInfo: null,
     showingBoringSamples: null,
-    selectedBoringSampleKey: null
+    selectedBoringSampleKey: null,
   }
   
   const projectsReducer = (state=INITIAL_PROJECTS_REDUCER_STATE, action) => {

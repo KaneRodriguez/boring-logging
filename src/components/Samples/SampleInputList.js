@@ -1,10 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-import {InteractiveList, InteractiveListWithAddButton} from '../InteractiveList'
 import TextField from 'material-ui/TextField'
-import Button from 'material-ui/Button';
-import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
-import List, { ListItem, ListItemText } from 'material-ui/List';
+import List, { ListItem } from 'material-ui/List';
 
 const SampleInputList = ({classes, handleChange, sample}) =>
     <List>
@@ -69,7 +66,6 @@ const SampleInputList = ({classes, handleChange, sample}) =>
             value={sample.recovery}
           />          
       </ListItem>
-      {/* <Divider /> */}
     </List>
 
 const GenericTextField = ({classes, handleChange, id, label, type, value}) =>

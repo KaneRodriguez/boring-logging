@@ -1,7 +1,6 @@
 import React from 'react'
-import TextField from 'material-ui/TextField'
 import Button from 'material-ui/Button'
-import Input, { InputLabel, InputAdornment } from 'material-ui/Input'
+import Input, { InputAdornment } from 'material-ui/Input'
 import { FormControl, FormHelperText } from 'material-ui/Form'
 import classNames from 'classnames'
 

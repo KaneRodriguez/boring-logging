@@ -2,12 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import BottomNavigation, { BottomNavigationAction } from 'material-ui/BottomNavigation';
-import Icon from 'material-ui/Icon';
 import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 import Snackbar from 'material-ui/Snackbar';
 
 import { connect } from 'react-redux';
-import { db } from '../../firebase';
 
 const styles = {
   root: {

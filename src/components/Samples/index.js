@@ -1,20 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { compose } from 'recompose';
 
-import {InteractiveList, InteractiveListWithAddButton} from '../InteractiveList'
-import TextField from 'material-ui/TextField'
-import { withStyles } from 'material-ui/styles';
-import Button from 'material-ui/Button';
-import AddIcon from 'material-ui-icons/Add';
-import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
-import { FormControl, FormHelperText } from 'material-ui/Form';
-import classNames from 'classnames';
-// import GeoLocation from './GeoLocation'
-import {geolocated} from 'react-geolocated';
-import FullScreenDialog from '../Dialog'
-import List, { ListItem, ListItemText } from 'material-ui/List';
-import SampleInputList from './SampleInputList'
+import { InteractiveListWithAddButton } from '../InteractiveList'
 import SampleInfo from './SampleInfo'
 
 class Samples extends Component {
@@ -30,10 +17,8 @@ class Samples extends Component {
     }
 
   componentDidMount() {
-    const { profile, selectedBoringKey, selectedProjectKey, selectedBoringSampleKey } = this.props;
+    const { boring, selectedBoringSampleKey } = this.props;
 
-    let project = profile.projects[selectedProjectKey]
-    let boring = project.borings[selectedBoringKey]
     let sample = selectedBoringSampleKey ? boring.samples[selectedBoringSampleKey] : null
     
     // we want a clone, not a copy of the reference
@@ -43,31 +28,8 @@ class Samples extends Component {
     }
     
   render() {
-    const { authUser, onSelectBoringSample, profile, classes, selectedBoringKey, selectedBoringSampleKey, 
-        selectedProjectKey, firebase, onSetSampleDescDialogOpen, onSetStrataDialogOpen } = this.props;
-
-    let project = profile.projects[selectedProjectKey]
-    let boring = project.borings[selectedBoringKey]
-    let selectedSample = boring.samples ? boring.samples[selectedBoringSampleKey] : null
-
-    let projectsPath = `users/${authUser.uid}/projects/`
-    let boringsPath = projectsPath + `${selectedProjectKey}/borings/`
-    let samplesPath = boringsPath + `${selectedBoringKey}/samples/`
-
-    const updateBoringSample = (sample) => {
-        if(selectedBoringSampleKey) {
-            firebase.update(
-                samplesPath + selectedBoringSampleKey, 
-                sample
-            )
-        } else {
-            // this is a new one
-            firebase.push(
-                samplesPath, 
-                sample ? sample : {title: 'Click Here to Change Title'}
-            )
-        }
-    }
+    const { boring, samplesPath, onSelectBoringSample, classes } = this.props
+    const { selectedBoringSampleKey, firebase, onSetSampleDescDialogOpen } = this.props;
 
     const updateBoringSampleWithKey = (key, sample) => {
         firebase.update(
@@ -76,20 +38,6 @@ class Samples extends Component {
         )
     }
 
-    let updateTmpSample = (event, name) => {
-        let tmpSample = this.state.tmpSample;
-        tmpSample[name] = event.target.value;
-        this.setState({tmpSample: tmpSample})
-    }
-
-    const onCloseDialog = () => {
-        this.setState({tmpSample: {}})
-        onSetSampleDescDialogOpen(false)
-    }
-    const onSaveSampleDesc = () => {
-        updateBoringSample(this.state.tmpSample)
-        onCloseDialog()
-    }
     const removeBoringSample = (key) => firebase.remove(
         samplesPath + key)
 
@@ -98,7 +46,7 @@ class Samples extends Component {
         onSetSampleDescDialogOpen(true)
     }
     return (
-      <div>
+        <div>
             <InteractiveListWithAddButton 
             name={'Sample'}
             items={boring.samples}
@@ -108,15 +56,16 @@ class Samples extends Component {
             classes={classes}
             editItemTitle={(key, title)=> updateBoringSampleWithKey(key, {title: title})}
             />
+
             { this.props.sampleDescDialogOpen
                 ? <SampleInfo
+                    samplesPath={samplesPath}
+                    sample={boring.samples[selectedBoringSampleKey]}
                     classes={classes}
                     firebase={firebase}
-                    profile={profile}
                 />
                 : null 
             }
-
             {/* <FullScreenDialog 
                 title="Strata"
                 open={this.props.strataDialogOpen}
@@ -136,20 +85,13 @@ class Samples extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    selectedProjectKey: state.projectState.selectedProjectKey,
-    selectedBoringKey: state.projectState.selectedBoringKey,
     selectedBoringSampleKey: state.projectState.selectedBoringSampleKey,
-    showingBoringInfo: state.projectState.showingBoringInfo,
-    showingBoringSamples: state.projectState.showingBoringSamples,
-    authUser: state.sessionState.authUser,
     sampleDescDialogOpen: state.navState.sampleDescDialogOpen,
-    strataDialogOpen: state.navState.strataDialogOpen,
 });
 
 const mapDispatchToProps = (dispatch) => ({
     onSelectBoringSample: (key) => dispatch({ type: 'BORING_SAMPLE_SELECT', key }),
     onSetSampleDescDialogOpen: (open) => dispatch({ type: 'SET_SAMPLE_DESC_DIALOG_OPEN', open }),
-    onSetStrataDialogOpen: (open) => dispatch({ type: 'SET_STRATA_DIALOG_OPEN', open }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Samples)

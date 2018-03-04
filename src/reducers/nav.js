@@ -5,7 +5,7 @@ const INITIAL_NAV_REDUCER_STATE = {
     strataDialogOpen: false,
   }
   
-  const navReducer = (state={anchorEl: null}, action) => {
+  const navReducer = (state=INITIAL_NAV_REDUCER_STATE, action) => {
     switch(action.type) {
       case 'SET_NAV_MENU_ANCHOR': {
         return {...state, anchorEl: action.anchorEl}

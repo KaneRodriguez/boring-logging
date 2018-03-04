@@ -1,6 +1,6 @@
 import { applyMiddleware, createStore, compose } from 'redux';
 import rootReducer from '../reducers';
-import { reactReduxFirebase, firebaseReducer } from 'react-redux-firebase'
+import { reactReduxFirebase } from 'react-redux-firebase'
 import { createLogger } from "redux-logger"
 import promise from "redux-promise-middleware"
 import * as firebase from 'firebase';

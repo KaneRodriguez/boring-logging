@@ -30,7 +30,11 @@ class Projects extends Component {
                 addItem={addProject}
                 classes={classes}
             />
-            : <Borings />
+            : <Borings 
+                project={profile.projects[selectedProjectKey]}
+                boringsPath={projectsPath + `${selectedProjectKey}/borings/`}
+                firebase={firebase}
+            />
         }
       </div>
     );

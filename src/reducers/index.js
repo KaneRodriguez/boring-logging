@@ -3,7 +3,6 @@ import sessionReducer from './session';
 import userReducer from './user';
 import navReducer from './nav';
 import projectsReducer from './projects';
-import {firebase} from '../firebase'
 import { firebaseReducer } from 'react-redux-firebase'
 
 const rootReducer = combineReducers({

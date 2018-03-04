@@ -10,7 +10,7 @@ import Projects from '../Projects'
 class HomePage extends Component {
 
   render() {
-    const { classes, profile} = this.props;
+    const { profile } = this.props;
 
     return (
       <div>

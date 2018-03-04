@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-import { withFirebase } from 'react-redux-firebase'
 
 import BoringInfo from './BoringInfo'
 import { InteractiveListWithAddButton } from '../InteractiveList'
 import Button from 'material-ui/Button'
 import { withStyles } from 'material-ui/styles';
 import Samples from '../Samples'
+import Stratas from '../Stratas'
+
+import Paper from 'material-ui/Paper'
+import Grid from 'material-ui/Grid'
+import Divider from 'material-ui/Divider';
 
 const styles = theme => ({
     button: {
@@ -31,17 +35,21 @@ const styles = theme => ({
     fab: {
       position: 'relative',
       left: theme.spacing.unit * 2,
-    },
+    }, 
+       root: {
+        flexGrow: 1,
+      },
+      paper: {
+        padding: theme.spacing.unit * 2,
+        color: theme.palette.text.secondary,
+      },
   });
 
 class Borings extends Component {
 
   render() {
-    const { authUser, onSelectProjectBoring, firebase, selectedProjectKey, 
-        selectedBoringKey, classes, profile} = this.props;
-
-    let projectsPath = `users/${authUser.uid}/projects/`
-    let boringsPath = projectsPath + `${selectedProjectKey}/borings/`
+    const { project, boringsPath, onSelectProjectBoring, firebase, 
+        selectedBoringKey, classes} = this.props;
 
     const addBoring = () => firebase.push(boringsPath, {title: 'Click Here to Change Title'})
     const removeBoring = (key) => firebase.remove(boringsPath + key)
@@ -63,8 +71,8 @@ class Borings extends Component {
         { !this.props.showingBoringSamples
         ? <InteractiveListWithAddButton
             name='Boring'
-            extraHeader={profile.projects[selectedProjectKey].title}
-            items={profile.projects[selectedProjectKey].borings}
+            extraHeader={project.title}
+            items={project.borings}
             removeItem={removeBoring}
             selectItem={onSelectProjectBoring}
             editItemTitle={editBoringTitle}
@@ -75,17 +83,37 @@ class Borings extends Component {
             bonusButtonTwoTitle={"Samples"}
             bonusButtonTwoOnClick={(key)=> bonusButtonTwoClicked(key)}
             />
-        : <Samples 
-            classes={classes}
-            firebase={firebase}
-            profile={profile}/> 
+        : 
+        <div className={classes.root} spacing={4}>
+            <Grid item xs={12}>
+                <Paper className={classes.paper}>
+                    <Samples 
+                        samplesPath={boringsPath + `${selectedBoringKey}/samples/`}
+                        boring={project.borings[selectedBoringKey]}
+                        classes={classes}
+                        firebase={firebase}
+                    /> 
+                </Paper>
+            </Grid>
+            <Divider />
+            <Grid item xs={12}>
+                <Paper className={classes.paper}>
+                    <Stratas 
+                        classes={classes}
+                        firebase={firebase}
+                    />  
+                </Paper>
+            </Grid>
+        </div>
         }
             { !!selectedBoringKey 
             ? this.props.showingBoringInfo
                 ? <BoringInfo 
+                boring={project.borings[selectedBoringKey]}
+                boringsPath={boringsPath}
                 classes={classes}
                 firebase={firebase}
-                profile={profile}/>
+                />
                 : null 
             : null
             }
@@ -96,11 +124,9 @@ class Borings extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  selectedProjectKey: state.projectState.selectedProjectKey,
   selectedBoringKey: state.projectState.selectedBoringKey,
   showingBoringInfo: state.projectState.showingBoringInfo,
   showingBoringSamples: state.projectState.showingBoringSamples,
-  authUser: state.sessionState.authUser,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -111,7 +137,5 @@ const mapDispatchToProps = (dispatch) => ({
 
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
-  withFirebase,
   withStyles(styles),
-  connect(({ firebase: { profile } }) => ({ profile }))
 )(Borings);

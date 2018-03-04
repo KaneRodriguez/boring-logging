@@ -1,19 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { compose } from 'recompose';
 
-import TextField from 'material-ui/TextField'
 import { withStyles } from 'material-ui/styles';
-import Button from 'material-ui/Button';
-import AddIcon from 'material-ui-icons/Add';
-import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
-import { FormControl, FormHelperText } from 'material-ui/Form';
-import classNames from 'classnames';
-// import GeoLocation from './GeoLocation'
-import {geolocated} from 'react-geolocated';
-// import BoringSampleDescription from './BoringSampleDescription'
-import {getFirebase} from 'react-redux-firebase'
-import { withFirebase } from 'react-redux-firebase'
 import FullScreenDialog from '../Dialog'
 import SampleInputList from './SampleInputList'
 
@@ -51,16 +39,12 @@ class SampleInfo extends Component {
             bottom: null,
             spt: null,
             pocketPen: null,
-            rimak: null
+            rimak: null,
         }
     }
 
   componentDidMount() {
-    const { profile, selectedBoringKey, selectedProjectKey, selectedBoringSampleKey } = this.props;
-
-    let project = profile.projects[selectedProjectKey]
-    let boring = project.borings[selectedBoringKey]
-    let sample = selectedBoringSampleKey ? boring.samples[selectedBoringSampleKey] : null
+    const { sample } = this.props;
 
     // we want a clone, not a copy of the reference
     let tmpSample = sample ? JSON.parse(JSON.stringify(sample)) : {title:''}    
@@ -69,16 +53,8 @@ class SampleInfo extends Component {
   }
 
   render() {
-    const { authUser, onSelectBoringSample, profile, classes, selectedBoringKey, selectedBoringSampleKey, 
-        selectedProjectKey, firebase, onSetSampleDescDialogOpen, onSetStrataDialogOpen } = this.props;
-
-    let project = profile.projects[selectedProjectKey]
-    let boring = project.borings[selectedBoringKey]
-    let selectedSample = boring.samples ? boring.samples[selectedBoringSampleKey] : null
-
-    let projectsPath = `users/${authUser.uid}/projects/`
-    let boringsPath = projectsPath + `${selectedProjectKey}/borings/`
-    let samplesPath = boringsPath + `${selectedBoringKey}/samples/`
+    const { samplesPath, onSelectBoringSample, classes, selectedBoringSampleKey, 
+         firebase, onSetSampleDescDialogOpen } = this.props;    
 
     const updateBoringSample = (sample) => {
         if(selectedBoringSampleKey) {
@@ -95,13 +71,6 @@ class SampleInfo extends Component {
         }
     }
 
-    const updateBoringSampleWithKey = (key, sample) => {
-        firebase.update(
-            samplesPath + key, 
-            sample
-        )
-    }
-
     let updateTmpSample = (event, name) => {
         let tmpSample = this.state.tmpSample;
         tmpSample[name] = event.target.value;
@@ -113,16 +82,10 @@ class SampleInfo extends Component {
         onSelectBoringSample(null)
         onSetSampleDescDialogOpen(false)
     }
+
     const onSaveSampleDesc = () => {
         updateBoringSample(this.state.tmpSample)
         onCloseDialog()
-    }
-    const removeBoringSample = (key) => firebase.remove(
-        samplesPath + key)
-
-    const boringSampleSelected = (key) => {
-        onSelectBoringSample(key)
-        onSetSampleDescDialogOpen(true)
     }
 
     return (
@@ -148,29 +111,13 @@ class SampleInfo extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    selectedProjectKey: state.projectState.selectedProjectKey,
-    selectedBoringKey: state.projectState.selectedBoringKey,
-    showingBoringInfo: state.projectState.showingBoringInfo,
-    showingBoringSamples: state.projectState.showingBoringSamples,
-    authUser: state.sessionState.authUser,
     sampleDescDialogOpen: state.navState.sampleDescDialogOpen,
     selectedBoringSampleKey: state.projectState.selectedBoringSampleKey,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    onBoringInfoShow: (showing) => dispatch({ type: 'BORING_INFO_SHOW', showing }),
-    onBoringSampleDescShow: (showing) => dispatch({ type: 'BORING_SAMPLE_DESC_SHOW', showing }),
-    onGeoLocationFailed: (error) => dispatch({ type: 'SET_GEOLOCATION_FAILED', error }),
     onSelectBoringSample: (key) => dispatch({ type: 'BORING_SAMPLE_SELECT', key }),
     onSetSampleDescDialogOpen: (open) => dispatch({ type: 'SET_SAMPLE_DESC_DIALOG_OPEN', open }),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps) (
-    withStyles(styles)(
-        geolocated({
-            positionOptions: {
-              enableHighAccuracy: true,
-            },
-            userDecisionTimeout: 5000,
-          })(SampleInfo)
-    ));
+export default connect(mapStateToProps, mapDispatchToProps) (withStyles(styles) (SampleInfo));
