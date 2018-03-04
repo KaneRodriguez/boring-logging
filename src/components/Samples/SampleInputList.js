@@ -80,3 +80,7 @@ const GenericTextField = ({classes, handleChange, id, label, type, value}) =>
 />    
 
 export default SampleInputList
+
+export {
+  GenericTextField
+}

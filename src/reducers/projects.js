@@ -5,6 +5,7 @@ const INITIAL_PROJECTS_REDUCER_STATE = {
     showingBoringInfo: null,
     showingBoringSamples: null,
     selectedBoringSampleKey: null,
+    selectedBoringStrataKey: null,
   }
   
   const projectsReducer = (state=INITIAL_PROJECTS_REDUCER_STATE, action) => {
@@ -20,6 +21,9 @@ const INITIAL_PROJECTS_REDUCER_STATE = {
       }
       case 'BORING_SAMPLE_SELECT': {
         return {...state, selectedBoringSampleKey: action.key}
+      }
+      case 'BORING_STRATA_SELECT': {
+        return {...state, selectedBoringStrataKey: action.key}
       }
       case 'BOTTOM_NAV_BACK_CLICKED': {
   

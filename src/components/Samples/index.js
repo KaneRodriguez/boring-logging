@@ -45,6 +45,9 @@ class Samples extends Component {
         onSelectBoringSample(key)
         onSetSampleDescDialogOpen(true)
     }
+
+    let sample = boring.samples ? boring.samples[selectedBoringSampleKey] : null
+
     return (
         <div>
             <InteractiveListWithAddButton 
@@ -60,25 +63,12 @@ class Samples extends Component {
             { this.props.sampleDescDialogOpen
                 ? <SampleInfo
                     samplesPath={samplesPath}
-                    sample={boring.samples[selectedBoringSampleKey]}
+                    sample={sample}
                     classes={classes}
                     firebase={firebase}
                 />
                 : null 
             }
-            {/* <FullScreenDialog 
-                title="Strata"
-                open={this.props.strataDialogOpen}
-                onClose={(e)=> onSetStrataDialogOpen(false)}
-                onSave={(e)=> onSaveStrata()}
-                pageContent={
-                    <StrataInputList 
-                        classes={classes}
-                        handleChange={updateNewStrata}
-                        sample={selectedBoringSampleKey ? selectedStrata : this.state.newSampleStrata}
-                    />
-                }
-            /> */}
       </div>
     );
   }

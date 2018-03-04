@@ -65,6 +65,8 @@ class Borings extends Component {
         this.props.onBoringSampleDescShow(true)
     }
 
+    let boring = project.borings ? project.borings[selectedBoringKey] : null
+
     return (
       <div>
 
@@ -89,7 +91,7 @@ class Borings extends Component {
                 <Paper className={classes.paper}>
                     <Samples 
                         samplesPath={boringsPath + `${selectedBoringKey}/samples/`}
-                        boring={project.borings[selectedBoringKey]}
+                        boring={boring}
                         classes={classes}
                         firebase={firebase}
                     /> 
@@ -99,6 +101,8 @@ class Borings extends Component {
             <Grid item xs={12}>
                 <Paper className={classes.paper}>
                     <Stratas 
+                        stratasPath={boringsPath + `${selectedBoringKey}/stratas/`}
+                        boring={boring}
                         classes={classes}
                         firebase={firebase}
                     />  
