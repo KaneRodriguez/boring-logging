@@ -3,7 +3,8 @@ import React from 'react'
 import InteractiveList from './InteractiveList'
 import TextField from 'material-ui/TextField'
 
-const InteractiveListWithTextField = ({ name, items, removeItem, editItem, selectItem, keyPress, editItemTitle, extraHeader }) =>
+const InteractiveListWithTextField = ({ name, items, removeItem, editItem, selectItem, 
+  keyPress, editItemTitle, extraHeader, getSecondary }) =>
   <div>
     <h2>My {name}s {!!extraHeader ? ": " + extraHeader: ''}</h2>
     <TextField
@@ -15,6 +16,7 @@ const InteractiveListWithTextField = ({ name, items, removeItem, editItem, selec
     />  
     <InteractiveList 
     listName={`Saved ${name}s`}
+    getSecondary={getSecondary}
     items={items} 
     removeItem={removeItem}
     selectItem={selectItem}

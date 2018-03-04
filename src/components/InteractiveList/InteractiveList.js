@@ -35,7 +35,6 @@ const styles = theme => ({
 class InteractiveList extends React.Component {
   state = {
     dense: false,
-    secondary: false,
     items: [],
     editKey: null,
   };
@@ -87,13 +86,16 @@ class InteractiveList extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
-    const { dense, secondary, editKey } = this.state;
+    const { classes, getSecondary} = this.props;
+    const { dense, editKey } = this.state;
     
+
     let listItems;
     if(this.props.items){
       listItems = Object.keys(this.props.items).map(key => {
       let listItem = this.props.items[key]
+      let secondary = getSecondary ? getSecondary(key) : null
+
       return (
           <ListItem key={key}>
                     <ListItemAvatar onClick={this.selectItem.bind(this, key)}>
@@ -105,7 +107,7 @@ class InteractiveList extends React.Component {
                     ?
                     <ListItemText
                       primary={listItem.title}
-                      secondary={secondary ? 'Secondary text' : null}
+                      secondary={secondary}
                       onClick={this.editItem.bind(this, key)}
                     />
                     :

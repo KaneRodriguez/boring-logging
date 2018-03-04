@@ -32,7 +32,6 @@ class Stratas extends Component {
     const { selectedBoringStrataKey, firebase, onSetStrataDialogOpen } = this.props;
 
     const updateBoringStrataWithKey = (key, strata) => {
-        console.log("updating boring strata with key", key, strata)
         firebase.update(
             stratasPath + key, 
             strata
@@ -49,10 +48,30 @@ class Stratas extends Component {
 
     let strata = boring.stratas ? boring.stratas[selectedBoringStrataKey] : null
 
+    let getSecondary = (key) => {
+        if(boring.stratas) {
+            let strata = boring.stratas[key]
+
+            if(strata) {
+                let soil = strata.soilName ? strata.soilName : null
+                let top = strata.top ? strata.top : null
+                let bottom = strata.bottom ? strata.bottom : null
+
+                let secondary = (soil ? "Soil: " + soil : '') +
+                                (top ? " Top: " + top : '') + 
+                                (bottom ? " Bottom: " + bottom : '')
+                
+                return secondary.trim()
+            }
+        }
+        return null
+    } 
+
     return (
         <div>
             <InteractiveListWithAddButton 
             name={'Strata'}
+            getSecondary={getSecondary}
             items={boring.stratas}
             removeItem={removeBoringStrata}
             selectItem={(key)=> boringStrataSelected(key)}
@@ -70,19 +89,6 @@ class Stratas extends Component {
                 />
                 : null 
             }
-            {/* <FullScreenDialog 
-                title="Strata"
-                open={this.props.strataDialogOpen}
-                onClose={(e)=> onSetStrataDialogOpen(false)}
-                onSave={(e)=> onSaveStrata()}
-                pageContent={
-                    <StrataInputList 
-                        classes={classes}
-                        handleChange={updateNewStrata}
-                        strata={selectedBoringStrataKey ? selectedStrata : this.state.newStrataStrata}
-                    />
-                }
-            /> */}
       </div>
     );
   }

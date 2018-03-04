@@ -6,10 +6,11 @@ import AddIcon from 'material-ui-icons/Add';
 
 const InteractiveListWithAddButton = ({name, items, removeItem, selectItem, editItemTitle, addItem, 
 classes, bonusButton1, bonusButton2, bonusButtonOneTitle, bonusButtonOneOnClick,
-bonusButtonTwoTitle, bonusButtonTwoOnClick}) =>
+bonusButtonTwoTitle, bonusButtonTwoOnClick, getSecondary}) =>
 <div>
     <InteractiveList 
         listName={`Saved ${name}s`}
+        getSecondary={getSecondary}
         items={items} 
         removeItem={removeItem}
         selectItem={selectItem}

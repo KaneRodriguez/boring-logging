@@ -1,7 +1,8 @@
 import React from 'react';
 
 import TextField from 'material-ui/TextField'
-import List, { ListItem } from 'material-ui/List';
+import List, { ListItem, ListItemText } from 'material-ui/List';
+import Grid from 'material-ui/Grid';
 
 const SampleInputList = ({classes, handleChange, sample}) =>
     <List>
@@ -33,22 +34,72 @@ const SampleInputList = ({classes, handleChange, sample}) =>
           />          
       </ListItem>
       <ListItem>
-        <GenericTextField
-            id="spt"
-            label="SPT"
-            classes={classes}
-            handleChange={handleChange}
-            value={sample.spt}
-          />          
+        <div className={classes.pocketPen}>
+          <Grid container spacing={24}>
+            <Grid item xs={4} small={3}>
+              <GenericTextField
+                id="sptOne"
+                label="S"
+                ////classes={classes}
+                handleChange={handleChange}
+                value={sample.sptOne}
+              /> 
+            </Grid>
+            <Grid item xs={4} small={3}>
+              <GenericTextField
+                id="sptTwo"
+                label="P"
+                //classes={classes}
+                handleChange={handleChange}
+                value={sample.sptTwo}
+              /> 
+            </Grid>
+            <Grid item xs={4} small={3}>
+              <GenericTextField
+                  id="sptThree"
+                  label="T"
+                  //classes={classes}
+                  handleChange={handleChange}
+                  value={sample.sptThree}
+              />        
+            </Grid>
+          </Grid>
+        </div>  
       </ListItem>
       <ListItem>
-        <GenericTextField
-            id="pocketPen"
-            label="Pocket Pen"
-            classes={classes}
-            handleChange={handleChange}
-            value={sample.pocketPen}
-          />      
+        <div className={classes.pocketPen}>
+          <Grid container spacing={24}>
+            <Grid item xs={4} small={3}>
+              <GenericTextField
+                id="pocketPenOne"
+                label="PP1"
+                // classes={classes}
+                handleChange={handleChange}
+                value={sample.pocketPen}
+                /> 
+            </Grid>
+            <Grid item xs={4} small={3}>
+              <GenericTextField
+                id="pocketPenTwo"
+                label="PP2"
+                //classes={classes}
+                handleChange={handleChange}
+                value={sample.pocketPen}
+              /> 
+            </Grid>
+            <Grid item xs={4} small={3}>
+              <GenericTextField
+                id="pocketPenThree"
+                label="PP3"
+                // classes={classes}
+                handleChange={handleChange}
+                value={sample.pocketPen}
+                /> 
+            </Grid>
+          </Grid>
+        </div>
+    </ListItem>
+      <ListItem>
         <GenericTextField
             id="rimak"
             label="Rimak"
@@ -72,7 +123,7 @@ const GenericTextField = ({classes, handleChange, id, label, type, value}) =>
 <TextField
     id={id}
     label={label}
-    className={classes.textField}
+    className={classes ? classes.textField : null}
     onChange={(e)=> handleChange(e, id)}
     margin="normal"
     type={type}

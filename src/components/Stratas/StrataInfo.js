@@ -57,9 +57,6 @@ class StrataInfo extends Component {
          firebase, onSetStrataDialogOpen } = this.props;    
 
     const updateBoringStrata = (strata) => {
-        console.log('updating boring strata', strata)
-        console.log('selectedBoringStrataKey', selectedBoringStrataKey)
-
         if(selectedBoringStrataKey) {
             firebase.update(
                 stratasPath + selectedBoringStrataKey, 
@@ -91,8 +88,7 @@ class StrataInfo extends Component {
         updateBoringStrata(this.state.tmpStrata)
         onCloseDialog()
     }
-    console.log("this.props.strataDialogOpen", this.props.strataDialogOpen)
-
+    
     return (
       <div>
         <FullScreenDialog 

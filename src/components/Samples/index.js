@@ -10,8 +10,12 @@ class Samples extends Component {
             title: '',
             top: null,
             bottom: null,
-            spt: null,
-            pocketPen: null,
+            sptOne: null,
+            sptTwo: null,
+            sptThree: null,
+            pocketPenOne: null,
+            pocketPenTwo: null,
+            pocketPenThree: null,
             rimak: null
         }
     }
@@ -48,10 +52,27 @@ class Samples extends Component {
 
     let sample = boring.samples ? boring.samples[selectedBoringSampleKey] : null
 
+    let getSecondary = (key) => {
+        if(boring.samples) {
+            let sample = boring.samples[key]
+
+            if(sample) {
+                let top = sample.top ? sample.top : null
+                let bottom = sample.bottom ? sample.bottom : null
+
+                let secondary = (top ? "Top: " + top : '') + (bottom ? " Bottom: " + bottom : '') 
+                
+                return secondary.trim()
+            }
+        }
+        return null
+    } 
+
     return (
         <div>
             <InteractiveListWithAddButton 
             name={'Sample'}
+            getSecondary={getSecondary}
             items={boring.samples}
             removeItem={removeBoringSample}
             selectItem={(key)=> boringSampleSelected(key)}

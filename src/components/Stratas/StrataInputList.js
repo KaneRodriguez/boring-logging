@@ -1,10 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-import {InteractiveList, InteractiveListWithAddButton} from '../InteractiveList'
-import TextField from 'material-ui/TextField'
-import Button from 'material-ui/Button';
-import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
-import List, { ListItem, ListItemText } from 'material-ui/List';
+import List, { ListItem } from 'material-ui/List';
 import {GenericTextField} from '../Samples/SampleInputList' // todo: move the generic textfield somewhere else
 
 const StrataInputList = ({classes, handleChange, strata}) =>
@@ -20,6 +16,15 @@ const StrataInputList = ({classes, handleChange, strata}) =>
     </ListItem>
     <ListItem>
       <GenericTextField
+        id="soilName"
+        label="Soil Name"
+        classes={classes}
+        handleChange={handleChange}
+        value={strata.soilName}
+        />          
+    </ListItem>
+    <ListItem>
+      <GenericTextField
         id="top"
         label="Top"
         classes={classes}
@@ -29,7 +34,7 @@ const StrataInputList = ({classes, handleChange, strata}) =>
         />          
     </ListItem>
       <ListItem>
-        <TextField
+        <GenericTextField
             id="soilDescription"
             label="Soil Description"
             classes={classes}
@@ -38,7 +43,7 @@ const StrataInputList = ({classes, handleChange, strata}) =>
           />          
       </ListItem>
       <ListItem>
-        <TextField
+        <GenericTextField
             id="bottom"
             label="Bottom"
             classes={classes}

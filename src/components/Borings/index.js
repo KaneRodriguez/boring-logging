@@ -25,6 +25,11 @@ const styles = theme => ({
       marginRight: theme.spacing.unit,
       width: 200,
     },
+    pocketPen: {
+        flexGrow: 1,
+        marginLeft: theme.spacing.unit,
+        marginRight: theme.spacing.unit,
+    },
     formControl: {
       margin: theme.spacing.unit,
       display: 'block'
