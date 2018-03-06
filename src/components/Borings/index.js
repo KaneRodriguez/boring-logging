@@ -3,15 +3,17 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 
 import BoringInfo from './BoringInfo'
-import { InteractiveListWithAddButton } from '../InteractiveList'
-import Button from 'material-ui/Button'
-import { withStyles } from 'material-ui/styles';
+
 import Samples from '../Samples'
 import Stratas from '../Stratas'
 
+import Button from 'material-ui/Button'
 import Paper from 'material-ui/Paper'
 import Grid from 'material-ui/Grid'
 import Divider from 'material-ui/Divider';
+
+import { InteractiveListWithAddButton } from '../InteractiveList'
+import { withStyles } from 'material-ui/styles';
 
 const styles = theme => ({
     button: {
@@ -51,6 +53,35 @@ const styles = theme => ({
   });
 
 class Borings extends Component {
+    constructor(props) {
+        super(props)
+
+        this.props.addVoiceCommand('update', 'my boring', 'info', this.updateBoringInfo, false)
+    }
+    updateBoringInfo = (value, voiceCommand) => {
+        const {firease, project, profile, boringsPath} = this.props
+            
+        Object.keys(project.borings).map(key => {
+            let boring = project.borings[key]
+            console.log('looking at boring', boring)
+      
+            if(boring.title.trim().toUpperCase() == voiceCommand.receiver.trim().toUpperCase()) {
+              this.boringInfoShowClicked(key)
+              // break out of mapping?
+            }
+          })
+    }
+
+    boringSelected = (key) => {
+        this.props.onSelectProjectBoring(key)
+        this.props.onBoringSampleDescShow(true)
+    }
+
+
+    boringInfoShowClicked = (key) => {
+        this.props.onSelectProjectBoring(key)
+        this.props.onBoringInfoShow(true)
+    }
 
   render() {
     const { project, boringsPath, onSelectProjectBoring, firebase, 
@@ -60,35 +91,22 @@ class Borings extends Component {
     const removeBoring = (key) => firebase.remove(boringsPath + key)
     const editBoringTitle = (key, title) => firebase.update(boringsPath + key, {title: title})
 
-    const bonusButtonOneClicked = (key) => {
-        onSelectProjectBoring(key)
-        this.props.onBoringInfoShow(true)
-    }
-
-    const bonusButtonTwoClicked = (key) => {
-        onSelectProjectBoring(key)
-        this.props.onBoringSampleDescShow(true)
-    }
-
     let boring = project.borings ? project.borings[selectedBoringKey] : null
 
     return (
       <div>
-
         { !this.props.showingBoringSamples
         ? <InteractiveListWithAddButton
             name='Boring'
             extraHeader={project.title}
             items={project.borings}
             removeItem={removeBoring}
-            selectItem={onSelectProjectBoring}
+            selectItem={this.boringSelected}
             editItemTitle={editBoringTitle}
             addItem={addBoring}
             classes={classes}
             bonusButtonOneTitle={"Info"}
-            bonusButtonOneOnClick={(key)=> bonusButtonOneClicked(key)}
-            bonusButtonTwoTitle={"Samples"}
-            bonusButtonTwoOnClick={(key)=> bonusButtonTwoClicked(key)}
+            bonusButtonOneOnClick={this.boringInfoShowClicked}
             />
         : 
         <div className={classes.root} spacing={4}>
@@ -145,6 +163,6 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default compose(
-  connect(mapStateToProps, mapDispatchToProps),
-  withStyles(styles),
+    connect(mapStateToProps, mapDispatchToProps),
+    withStyles(styles),
 )(Borings);

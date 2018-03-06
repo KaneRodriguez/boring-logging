@@ -4,6 +4,7 @@ const INITIAL_PROJECTS_REDUCER_STATE = {
     selectedBoringKey: null,
     showingBoringInfo: null,
     showingBoringSamples: null,
+    showingStrataPlot: null,
     selectedBoringSampleKey: null,
     selectedBoringStrataKey: null,
   }
@@ -35,7 +36,10 @@ const INITIAL_PROJECTS_REDUCER_STATE = {
         }
       }
       case 'BORING_INFO_SHOW': {
-          return {...state, showingBoringInfo: action.showing}
+        return {...state, showingBoringInfo: action.showing}
+      }
+      case 'STRATA_PLOT_SHOW': {
+        return {...state, showingStrataPlot: action.showing}
       }
       case 'AUTH_USER_SET' : {
         if(!action.authUser) {

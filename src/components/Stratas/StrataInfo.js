@@ -20,7 +20,7 @@ const styles = theme => ({
   formControl: {
     margin: theme.spacing.unit,
     display: 'block'
-  },
+  }, 
   withoutLabel: {
     marginTop: theme.spacing.unit * 3,
   },

@@ -3,6 +3,9 @@ import { connect } from 'react-redux';
 
 import { InteractiveListWithAddButton } from '../InteractiveList'
 import StrataInfo from './StrataInfo'
+import BoringPlot from '../BoringPlot'
+import FullScreenDialog from '../Dialog'
+import Button from 'material-ui/Button'
 
 class Stratas extends Component {
     state = {
@@ -29,7 +32,7 @@ class Stratas extends Component {
     
   render() {
     const { boring, stratasPath, onSelectBoringStrata, classes } = this.props
-    const { selectedBoringStrataKey, firebase, onSetStrataDialogOpen } = this.props;
+    const { setStrataPlotShowing, selectedBoringStrataKey, firebase, onSetStrataDialogOpen } = this.props;
 
     const updateBoringStrataWithKey = (key, strata) => {
         firebase.update(
@@ -67,8 +70,22 @@ class Stratas extends Component {
         return null
     } 
 
+    let onCloseDialog = () => setStrataPlotShowing(false)
+
     return (
         <div>
+            <FullScreenDialog 
+                title="Strata Plot"
+                fullScreen={true}
+                open={this.props.showingStrataPlot}
+                onClose={(e)=> onCloseDialog()}
+                pageContent={
+                    <BoringPlot stratas={boring.stratas}/>
+                }
+            />
+            <Button variant="raised" color="primary" onClick={(e)=> {setStrataPlotShowing(true)}}>
+                Show Strata Plot
+            </Button>
             <InteractiveListWithAddButton 
             name={'Strata'}
             getSecondary={getSecondary}
@@ -97,11 +114,13 @@ class Stratas extends Component {
 const mapStateToProps = (state) => ({
     selectedBoringStrataKey: state.projectState.selectedBoringStrataKey,
     strataDialogOpen: state.navState.strataDialogOpen,
+    showingStrataPlot: state.projectState.showingStrataPlot,
 });
 
 const mapDispatchToProps = (dispatch) => ({
     onSelectBoringStrata: (key) => dispatch({ type: 'BORING_STRATA_SELECT', key }),
     onSetStrataDialogOpen: (open) => dispatch({ type: 'SET_STRATA_DIALOG_OPEN', open }),
+    setStrataPlotShowing: (showing) => dispatch({ type: 'STRATA_PLOT_SHOW', showing })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Stratas)

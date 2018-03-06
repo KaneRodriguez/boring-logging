@@ -5,6 +5,7 @@ import { withStyles } from 'material-ui/styles';
 import {geolocated} from 'react-geolocated';
 import BoringInfoInputForms from './BoringInfoInputForms'
 import FullScreenDialog from '../Dialog'
+import withVoiceRecognitionAI from '../VoiceRecognitionAI';
 
 const styles = theme => ({
   button: {
@@ -144,5 +145,5 @@ export default connect(mapStateToProps, mapDispatchToProps) (
               enableHighAccuracy: true,
             },
             userDecisionTimeout: 5000,
-          })(BoringInfo)
+          })(withVoiceRecognitionAI(BoringInfo))
     ));

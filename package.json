@@ -13,6 +13,7 @@
     "react": "^16.1.1",
     "react-dom": "^16.1.1",
     "react-geolocated": "^2.3.0",
+    "react-plotly.js": "^1.6.0",
     "react-pure-render": "^1.0.2",
     "react-redux": "^5.0.7",
     "react-redux-firebase": "^2.0.4",

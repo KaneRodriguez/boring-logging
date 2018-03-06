@@ -19,7 +19,6 @@ class HomePage extends Component {
           ? <Projects />
           : <CircularProgress  size={50} />
         }
-
       </div>
     );
   }
