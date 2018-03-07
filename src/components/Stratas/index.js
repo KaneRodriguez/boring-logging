@@ -6,6 +6,10 @@ import StrataInfo from './StrataInfo'
 import BoringPlot from '../BoringPlot'
 import FullScreenDialog from '../Dialog'
 import Button from 'material-ui/Button'
+import PageWithScene from '../BoringPlot/PageWithScene'
+import BasicPageWithScene from '../BoringPlot/BasicPageWithScene'
+
+
 
 class Stratas extends Component {
     state = {
@@ -81,11 +85,13 @@ class Stratas extends Component {
                 onClose={(e)=> onCloseDialog()}
                 pageContent={
                     <BoringPlot stratas={boring.stratas}/>
+                   // <BasicPageWithScene />
                 }
             />
             <Button variant="raised" color="primary" onClick={(e)=> {setStrataPlotShowing(true)}}>
                 Show Strata Plot
             </Button>
+
             <InteractiveListWithAddButton 
             name={'Strata'}
             getSecondary={getSecondary}
