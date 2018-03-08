@@ -5,7 +5,8 @@ import { withStyles } from 'material-ui/styles';
 import {geolocated} from 'react-geolocated';
 import BoringInfoInputForms from './BoringInfoInputForms'
 import FullScreenDialog from '../Dialog'
-import withVoiceRecognitionAI from '../VoiceRecognitionAI';
+// import withVoiceRecognitionAI from '../VoiceRecognitionAI';
+import annyang from 'annyang'
 
 const styles = theme => ({
   button: {
@@ -36,23 +37,92 @@ class BoringInfo extends Component {
 
     state = {
         tmpBoring: {
-            groundSurfaceElevationFt: null,
-            driller: null,
-            engineer: null,
-            latitude: null,
-            longitude: null,
-        }
+            groundSurfaceElevationFt: 0,
+            driller: '',
+            engineer: '',
+            latitude: 0,
+            longitude: 0,
+        },
+        commands: {}
     }
 
   componentDidMount() {
-    const { boring } = this.props;
+        const { boring } = this.props;
 
-    let tmpBoring = JSON.parse(JSON.stringify(boring)); // we want a clone, not a copy of the reference
+        let tmpBoring = JSON.parse(JSON.stringify(boring)); // we want a clone, not a copy of the reference
 
-    this.setState({tmpBoring: tmpBoring})
+        this.setState({tmpBoring: tmpBoring})
 
-    this.onAutoFillLocation = this.onAutoFillLocation.bind(this)
-  }
+        this.onAutoFillLocation = this.onAutoFillLocation.bind(this)
+
+        if(annyang) {
+            var commands = {
+            'update *target to :value (my location)': this.updateTmpBoringFromVoice,
+            }          
+            
+            annyang.addCommands(commands);
+
+            this.setState({commands})
+        }
+    }
+    componentWillUnmount() {
+        if(annyang) {
+            if(this.state.commands)
+                annyang.removeCommands(this.state.commands);
+
+            this.setState({commands: {}})
+        }
+    }
+    updateTmpBoring = (key, value) => {
+        console.log('updating key', key, 'to', value)
+        let tmpBoring = this.state.tmpBoring;
+        console.log('boring before', tmpBoring,)
+
+        tmpBoring[key] = value;
+        console.log('boring after', tmpBoring,)
+
+        this.setState({tmpBoring: tmpBoring})
+    }
+
+    updateTmpBoringFromVoice = (target, value) => {
+        switch(target.trim().toUpperCase()) {
+            case 'GROUND SURFACE ELEVATION': {
+                this.updateTmpBoring('groundSurfaceElevationFt', value)
+                break;
+            }
+            case 'DRILLER': {
+                console.log('updating driller to', value)
+                this.updateTmpBoring('driller', value)
+                break;
+            }
+            case 'ENGINEER': {
+                this.updateTmpBoring('engineer', value)
+                break;
+            }
+            case 'LATITUDE': {
+                if(value.trim().toUpperCase() == "USE") {
+                    this.onAutoFillLocation()
+                }
+                else {
+                    this.updateTmpBoring('latitude', value)
+                }
+                break;
+            }
+            case 'LONGITUDE': {
+                if(value.trim().toUpperCase() == "USE MY LOCATION") {
+                    this.onAutoFillLocation()
+                }
+                else {
+                    this.updateTmpBoring('longitude', value)
+                }
+                break;
+            }
+        }
+    }
+
+    updateTmpBoringFromEvent = (event, name) => {
+        this.updateTmpBoring(name, event.target.value)
+    }
 
   onAutoFillLocation(event) {
       const { onGeoLocationFailed } = this.props;
@@ -88,12 +158,6 @@ class BoringInfo extends Component {
         obj
     )
 
-    let updateTmpBoring = (event, name) => {
-        let tmpBoring = this.state.tmpBoring;
-        tmpBoring[name] = event.target.value;
-        this.setState({tmpBoring: tmpBoring})
-    }
-
     let onSaveSampleDesc = () => {
         updateBoring(this.state.tmpBoring)
         onBoringInfoShow(false)
@@ -115,7 +179,7 @@ class BoringInfo extends Component {
             pageContent={
                 <BoringInfoInputForms 
                     classes={classes}
-                    handleChange={updateTmpBoring}
+                    handleChange={this.updateTmpBoringFromEvent}
                     boring={this.state.tmpBoring}
                     onAutoFillLocation={this.onAutoFillLocation}
                 />
@@ -145,5 +209,5 @@ export default connect(mapStateToProps, mapDispatchToProps) (
               enableHighAccuracy: true,
             },
             userDecisionTimeout: 5000,
-          })(withVoiceRecognitionAI(BoringInfo))
+          })(BoringInfo)
     ));

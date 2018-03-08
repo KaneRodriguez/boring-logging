@@ -56,7 +56,7 @@ class Borings extends Component {
     constructor(props) {
         super(props)
 
-        this.props.addVoiceCommand('update', 'my boring', 'info', this.updateBoringInfo, false)
+       // this.props.addVoiceCommand('update', 'my boring', 'info', this.updateBoringInfo, false)
     }
     updateBoringInfo = (value, voiceCommand) => {
         const {firease, project, profile, boringsPath} = this.props

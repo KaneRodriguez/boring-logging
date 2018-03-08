@@ -1,6 +1,6 @@
 const INITIAL_NAV_REDUCER_STATE = {
     anchorEl: null, 
-    geoLocationErrorMessage: null,
+    errorMessage: null,
     sampleDescDialogOpen: false,
     strataDialogOpen: false,
   }
@@ -11,7 +11,10 @@ const INITIAL_NAV_REDUCER_STATE = {
         return {...state, anchorEl: action.anchorEl}
       }
       case 'SET_GEOLOCATION_FAILED': {
-        return {...state, geoLocationErrorMessage: action.error}
+        return {...state, errorMessage: action.error}
+      }  
+      case 'VOICE_COMMAND_ERROR': {
+        return {...state, errorMessage: action.error}
       }
       case 'SET_SAMPLE_DESC_DIALOG_OPEN': {
         return {...state, sampleDescDialogOpen: action.open}

@@ -19,7 +19,7 @@ class LabelBottomNavigation extends React.Component {
 
   render() {
     const { classes, selectedProjectKey, onSnackBarClose,
-      selectedBoringKey, onBottomNavigationMenuClicked, geoLocationErrorMessage } = this.props;
+      selectedBoringKey, onBottomNavigationMenuClicked, errorMessage } = this.props;
 
     // TODO: tie to some boolean / string that belongs to the projectsReducer
 
@@ -38,12 +38,12 @@ class LabelBottomNavigation extends React.Component {
       </BottomNavigation>
       <Snackbar
         //anchorOrigin={{'bottom', 'center' }}
-        open={!!geoLocationErrorMessage}
+        open={!!errorMessage}
         onClose={(event)=> onSnackBarClose(null)}
         SnackbarContentProps={{
           'aria-describedby': 'message-id',
         }}
-        message={<span id="message-id">{geoLocationErrorMessage}</span>}
+        message={<span id="message-id">{errorMessage}</span>}
       />
       </div>
     );
@@ -58,7 +58,7 @@ LabelBottomNavigation.propTypes = {
 const mapStateToProps = (state) => ({
   selectedProjectKey: state.projectState.selectedProjectKey,
   selectedBoringKey: state.projectState.selectedBoringKey,
-  geoLocationErrorMessage: state.navState.geoLocationErrorMessage,
+  errorMessage: state.navState.errorMessage,
 });
 
 const mapDispatchToProps = (dispatch) => ({

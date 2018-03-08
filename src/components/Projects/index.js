@@ -12,8 +12,8 @@ class Projects extends Component {
   constructor(props) {
     super(props)
 
-    this.props.addVoiceCommand('add', 'project', 'with title', this.addProjectWithTitle)
-    this.props.addVoiceCommand('remove', 'project', 'with title', this.removeProjectWithTitle)
+    //this.props.addVoiceCommand('add', 'project', 'with title', this.addProjectWithTitle)
+    //this.props.addVoiceCommand('remove', 'project', 'with title', this.removeProjectWithTitle)
   }
   removeProjectWithTitle = (title) => {
     const {profile} = this.props
@@ -60,8 +60,6 @@ class Projects extends Component {
 
     const editProjectTitle = (key, title) => firebase.update(projectsPath + key, {title: title})
 
-    //console.log("profile projects", profile.projects[selectedProjectKey])
-
     return (
       <div>
           { !selectedProjectKey 
@@ -75,7 +73,7 @@ class Projects extends Component {
                 classes={classes}
             />
             : <Borings 
-               addVoiceCommand={this.props.addVoiceCommand}
+               //addVoiceCommand={this.props.addVoiceCommand}
                 project={profile.projects[selectedProjectKey]}
                 boringsPath={projectsPath + `${selectedProjectKey}/borings/`}
                 firebase={firebase}
