@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 import FullScreenDialog from '../Dialog'
 import StrataInputList from './StrataInputList'
+import annyang from 'annyang'
+import wordsToNumbers from 'words-to-numbers'
 
 const styles = theme => ({
   button: {
@@ -35,11 +37,11 @@ class StrataInfo extends Component {
     state = {
         tmpStrata: {
             title: '',
-            top: null,
-            bottom: null,
-            spt: null,
-            pocketPen: null,
-            rimak: null,
+            top: 0,
+            bottom: 0,
+            soilName: '',
+            soilDescription: '',
+            commands: {}
         }
     }
 
@@ -50,7 +52,75 @@ class StrataInfo extends Component {
     let tmpStrata = strata ? JSON.parse(JSON.stringify(strata)) : {title:''}    
   
     this.setState({tmpStrata: tmpStrata})
+
+    if(annyang) {
+        var commands = {
+            'close (window)': this.onCloseDialog,
+            'save (window)': this.onSave, // NEED TO TEST save and close commands
+            '*target is *value': this.updateTmpStrataFromVoice,
+            'change *target to *value': this.updateTmpStrataFromVoice,
+            'change title to *value': (value)=> this.updateTmpStrataFromVoice('TITLE', wordsToNumbers(value, {fuzzy: true})),
+            'change top to *value': (value)=> this.updateTmpStrataFromVoice('TOP', wordsToNumbers(value, {fuzzy: true})),
+            'change bottom to *value': (value)=> this.updateTmpStrataFromVoice('BOTTOM', wordsToNumbers(value, {fuzzy: true})),
+            'change soil name to *value': (value)=> this.updateTmpStrataFromVoice('SOIL NAME', wordsToNumbers(value, {fuzzy: true})),
+            'change soil description to *value': (value)=> this.updateTmpStrataFromVoice('SOIL DESCRIPTION', wordsToNumbers(value, {fuzzy: true})),
+        }     
+
+        console.log('mounting and annyang')
+        annyang.addCommands(commands);
+
+        this.setState({commands})
+    }
   }
+
+    componentWillUnmount() {
+        if(annyang) {
+
+            console.log('unmounting annyang')
+            if(this.state.commands) {
+                console.log('removing commands', Object.keys(this.state.commands))
+                annyang.removeCommands(Object.keys(this.state.commands));
+            }
+
+            this.setState({commands: {}})
+        }
+    }
+
+    updateTmpStrataFromVoice = (target, value) => {
+        switch(target.trim().toUpperCase()) {
+            case 'TITLE': {
+                this.updateTmpStrata('title', value)
+                break;
+            }
+            case 'TOP': {
+                this.updateTmpStrata('top', value)
+                break;
+            }
+            case 'BOTTOM': {
+                this.updateTmpStrata('bottom', value)
+                break;
+            }
+            case 'SOIL NAME': case 'NAME': case 'OLD MAN': {
+                this.updateTmpStrata('soilName', value)
+                break;
+            }
+            case 'SOIL DESCRIPTION': case 'DESCRIPTION': {
+                this.updateTmpStrata('soilDescription', value)
+                break;
+            }
+        }
+    }
+
+    updateTmpStrataFromEvent = (event, name) => {
+        this.updateTmpStrata(name, event.target.value)
+    }
+    
+    updateTmpStrata = (key, value) => {
+        let tmpStrata = this.state.tmpStrata;
+        tmpStrata[key] = value;
+        this.setState({tmpStrata: tmpStrata})
+    }
+
 
   render() {
     const { stratasPath, onSelectBoringStrata, classes, selectedBoringStrataKey, 
@@ -66,16 +136,9 @@ class StrataInfo extends Component {
             // this is a new one
             firebase.push(
                 stratasPath, 
-                strata ? strata : {title: 'Click Here to Change Title'}
+                strata ? strata : {title: 'New Strata'}
             )
         }
-    }
-
-    let updateTmpStrata = (event, name) => {
-        console.log("updating tmp strata")
-        let tmpStrata = this.state.tmpStrata;
-        tmpStrata[name] = event.target.value;
-        this.setState({tmpStrata: tmpStrata})
     }
 
     const onCloseDialog = () => {
@@ -95,12 +158,12 @@ class StrataInfo extends Component {
             title="Strata Description"
             fullScreen={true}
             open={this.props.strataDialogOpen}
-            onClose={(e)=> onCloseDialog()}
-            onSave={(e)=> onSaveStrata()}
+            onClose={onCloseDialog}
+            onSave={onSaveStrata}
             pageContent={
                 <StrataInputList 
                     classes={classes}
-                    handleChange={updateTmpStrata}
+                    handleChange={this.updateTmpStrataFromEvent}
                     strata={this.state.tmpStrata}
                 />
             }

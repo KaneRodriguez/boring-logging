@@ -73,7 +73,6 @@ class Projects extends Component {
                 classes={classes}
             />
             : <Borings 
-               //addVoiceCommand={this.props.addVoiceCommand}
                 project={profile.projects[selectedProjectKey]}
                 boringsPath={projectsPath + `${selectedProjectKey}/borings/`}
                 firebase={firebase}

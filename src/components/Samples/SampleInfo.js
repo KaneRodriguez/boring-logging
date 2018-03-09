@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 import FullScreenDialog from '../Dialog'
 import SampleInputList from './SampleInputList'
+import annyang from 'annyang'
+import wordsToNumbers from 'words-to-numbers';
 
 const styles = theme => ({
   button: {
@@ -35,12 +37,17 @@ class SampleInfo extends Component {
     state = {
         tmpSample: {
             title: '',
-            top: null,
-            bottom: null,
-            spt: null,
-            pocketPen: null,
-            rimak: null,
-        }
+            top: 0,
+            bottom: 0,
+            sptOne: 0,
+            sptTwo: 0,
+            sptThree: 0,
+            pocketPenOne: 0,
+            pocketPenTwo: 0,
+            pocketPenThree: 0,
+            rimak: 0,
+        },
+        commands: {}
     }
 
   componentDidMount() {
@@ -50,13 +57,130 @@ class SampleInfo extends Component {
     let tmpSample = sample ? JSON.parse(JSON.stringify(sample)) : {title:''}    
   
     this.setState({tmpSample: tmpSample})
-  }
 
-  render() {
-    const { samplesPath, onSelectBoringSample, classes, selectedBoringSampleKey, 
-         firebase, onSetSampleDescDialogOpen } = this.props;    
+        if(annyang) {
+            var commands = {
+            '*target is *value': this.updateTmpSampleFromVoice,
+            'change *target to *value': this.updateTmpSampleFromVoice,
+            'change title to *value': (value)=> this.updateTmpSampleFromVoice('TITLE', wordsToNumbers(value, {fuzzy: true})),
+            'change top to *value': (value)=> this.updateTmpSampleFromVoice('TOP', wordsToNumbers(value, {fuzzy: true})),
+            'change bottom to *value': (value)=> this.updateTmpSampleFromVoice('BOTTOM', wordsToNumbers(value, {fuzzy: true})),
+            'change PP 1 to *value': (value)=> this.updateTmpSampleFromVoice('PP 1', wordsToNumbers(value, {fuzzy: true})),
+            'change PP 1 2 *value': (value)=> this.updateTmpSampleFromVoice('PP 1', wordsToNumbers(value, {fuzzy: true})),
+            'change PP 2 to *value': (value)=> this.updateTmpSampleFromVoice('PP 2', wordsToNumbers(value, {fuzzy: true})),
+            'change PP 3 to *value': (value)=> this.updateTmpSampleFromVoice('PP 3', wordsToNumbers(value, {fuzzy: true})),
+            'change SPT-1 to *value': (value)=> this.updateTmpSampleFromVoice('SPT-1', wordsToNumbers(value, {fuzzy: true})),
+            'change SPT-2 to *value': (value)=> this.updateTmpSampleFromVoice('SPT-2', wordsToNumbers(value, {fuzzy: true})),
+            'change SPT-3 to *value': (value)=> this.updateTmpSampleFromVoice('SPT-3', wordsToNumbers(value, {fuzzy: true})),
+            'change Rimak to *value': (value)=> this.updateTmpSampleFromVoice('rimak', wordsToNumbers(value, {fuzzy: true})),
+            'change recovery to *value': (value)=> this.updateTmpSampleFromVoice('recovery', wordsToNumbers(value, {fuzzy: true})),
+            }          
+            console.log('mouting and annyang')
+            annyang.addCommands(commands);
 
-    const updateBoringSample = (sample) => {
+            this.setState({commands})
+        }
+    }
+
+    componentWillUnmount() {
+        if(annyang) {
+
+            console.log('unmounting and annyang')
+            if(this.state.commands) {
+                console.log('removing commands', Object.keys(this.state.commands))
+                annyang.removeCommands(Object.keys(this.state.commands));
+            }
+
+            this.setState({commands: {}})
+        }
+    }
+
+    updateTmpSampleFromVoice = (target, value) => {
+        switch(target.trim().toUpperCase()) {
+            case 'TITLE': {
+                this.updateTmpSample('title', value)
+                break;
+            }
+            case 'TOP': case 'TIME': {
+                this.updateTmpSample('top', value)
+                break;
+            }
+            case 'SPT-1': case 'SPT 1': {
+                this.updateTmpSample('sptOne', value)
+                break;
+            }
+            case 'SPT-2': case 'SPT 2': {
+                this.updateTmpSample('sptTwo', value)
+                break;
+            }
+            case 'SPT-3': case 'SPT 3': {
+                this.updateTmpSample('sptThree', value)
+                break;
+            }
+            case 'BOTTOM': {
+                this.updateTmpSample('bottom', value)
+                break;
+            }
+            case 'PP 1': case 'PP ONE':  case 'PT 1':{
+                this.updateTmpSample('pocketPenOne', value)
+                break;
+            }
+            case 'PP 2': case 'PP TWO': case 'PT 2':{
+                this.updateTmpSample('pocketPenTwo', value)
+                break;
+            }
+            case 'PP 3': case 'PP THREE': case 'PT 3':{
+                this.updateTmpSample('pocketPenThree', value)
+                break;
+            }
+            case 'SPT': {
+                if(value < 999) {
+                    var ones = Math.floor(value % 10),
+                    tens = Math.floor(value/10 % 10),
+                    hundreds = Math.floor(value/100 % 10)
+
+                    this.updateTmpSample('sptOne', hundreds)
+                    this.updateTmpSample('sptTwo', tens)
+                    this.updateTmpSample('sptThree', ones)
+                }
+                break;
+            }
+            case 'POCKET PEN': case 'PAKISTAN': case 'POCKET PATTERN': case 'POCKET': case 'PEN': {
+                if(value < 999) {
+                    var ones = Math.floor(value % 10),
+                    tens = Math.floor(value/10 % 10),
+                    hundreds = Math.floor(value/100 % 10)
+
+                    this.updateTmpSample('pocketPenOne', hundreds)
+                    this.updateTmpSample('pocketPenTwo', tens)
+                    this.updateTmpSample('pocketPenThree', ones)
+                }
+                break;
+            }
+            // rimak is hard for the ai to understand?
+            case 'RIMAK': case 'REMAC': case 'REMOC': case 'MY MAC': case 'MAC': case 'REACT':  case 'REMAX': {
+                this.updateTmpSample('rimak', value)
+                break;
+            }
+            case 'RECOVERY': {
+                this.updateTmpSample('recovery', value)
+                break;
+            }
+        }
+    }
+
+    updateTmpSampleFromEvent = (event, name) => {
+        this.updateTmpSample(name, event.target.value)
+    }
+
+    updateTmpSample = (key, value) => {
+        let tmpSample = this.state.tmpSample;
+        tmpSample[key] = value;
+        this.setState({tmpSample: tmpSample})
+    }
+
+    updateBoringSample = (sample) => {
+        const {selectedBoringSampleKey, firebase, samplesPath} = this.props
         if(selectedBoringSampleKey) {
             firebase.update(
                 samplesPath + selectedBoringSampleKey, 
@@ -71,11 +195,9 @@ class SampleInfo extends Component {
         }
     }
 
-    let updateTmpSample = (event, name) => {
-        let tmpSample = this.state.tmpSample;
-        tmpSample[name] = event.target.value;
-        this.setState({tmpSample: tmpSample})
-    }
+  render() {
+    const { samplesPath, onSelectBoringSample, classes, selectedBoringSampleKey, 
+         firebase, onSetSampleDescDialogOpen } = this.props;    
 
     const onCloseDialog = () => {
         this.setState({tmpSample: {}})
@@ -84,7 +206,7 @@ class SampleInfo extends Component {
     }
 
     const onSaveSampleDesc = () => {
-        updateBoringSample(this.state.tmpSample)
+        this.updateBoringSample(this.state.tmpSample)
         onCloseDialog()
     }
 
@@ -99,7 +221,7 @@ class SampleInfo extends Component {
             pageContent={
                 <SampleInputList 
                     classes={classes}
-                    handleChange={updateTmpSample}
+                    handleChange={this.updateTmpSampleFromEvent}
                     sample={this.state.tmpSample}
                 />
             }

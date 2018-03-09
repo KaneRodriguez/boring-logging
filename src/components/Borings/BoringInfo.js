@@ -57,36 +57,38 @@ class BoringInfo extends Component {
 
         if(annyang) {
             var commands = {
-            'update *target to :value (my location)': this.updateTmpBoringFromVoice,
+                'change *target to *value': this.updateTmpBoringFromVoice,
+                '*target is *value': this.updateTmpBoringFromVoice,
             }          
-            
+            console.log('mounting and annyang')
             annyang.addCommands(commands);
 
             this.setState({commands})
         }
     }
+
     componentWillUnmount() {
         if(annyang) {
-            if(this.state.commands)
-                annyang.removeCommands(this.state.commands);
+
+            console.log('unmounting annyang')
+            if(this.state.commands) {
+                console.log('removing commands', Object.keys(this.state.commands))
+                annyang.removeCommands(Object.keys(this.state.commands));
+            }
 
             this.setState({commands: {}})
         }
     }
+
     updateTmpBoring = (key, value) => {
-        console.log('updating key', key, 'to', value)
         let tmpBoring = this.state.tmpBoring;
-        console.log('boring before', tmpBoring,)
-
         tmpBoring[key] = value;
-        console.log('boring after', tmpBoring,)
-
         this.setState({tmpBoring: tmpBoring})
     }
 
     updateTmpBoringFromVoice = (target, value) => {
         switch(target.trim().toUpperCase()) {
-            case 'GROUND SURFACE ELEVATION': {
+            case 'GROUND SURFACE ELEVATION': case 'GROUND': case 'SURFACE':  case 'ELEVATION': {
                 this.updateTmpBoring('groundSurfaceElevationFt', value)
                 break;
             }
@@ -100,7 +102,8 @@ class BoringInfo extends Component {
                 break;
             }
             case 'LATITUDE': {
-                if(value.trim().toUpperCase() == "USE") {
+                if(value.trim().toUpperCase() == "USE MY LOCATION" 
+                    || value.trim().toUpperCase() == "USING MY LOCATION" ) {
                     this.onAutoFillLocation()
                 }
                 else {
@@ -109,7 +112,8 @@ class BoringInfo extends Component {
                 break;
             }
             case 'LONGITUDE': {
-                if(value.trim().toUpperCase() == "USE MY LOCATION") {
+                if(value.trim().toUpperCase() == "USE MY LOCATION"
+                    || value.trim().toUpperCase() == "USING MY LOCATION") {
                     this.onAutoFillLocation()
                 }
                 else {

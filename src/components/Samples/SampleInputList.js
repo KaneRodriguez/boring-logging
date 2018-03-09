@@ -75,7 +75,7 @@ const SampleInputList = ({classes, handleChange, sample}) =>
                 label="PP1"
                 // classes={classes}
                 handleChange={handleChange}
-                value={sample.pocketPen}
+                value={sample.pocketPenOne}
                 /> 
             </Grid>
             <Grid item xs={4} small={3}>
@@ -84,7 +84,7 @@ const SampleInputList = ({classes, handleChange, sample}) =>
                 label="PP2"
                 //classes={classes}
                 handleChange={handleChange}
-                value={sample.pocketPen}
+                value={sample.pocketPenTwo}
               /> 
             </Grid>
             <Grid item xs={4} small={3}>
@@ -93,7 +93,7 @@ const SampleInputList = ({classes, handleChange, sample}) =>
                 label="PP3"
                 // classes={classes}
                 handleChange={handleChange}
-                value={sample.pocketPen}
+                value={sample.pocketPenThree}
                 /> 
             </Grid>
           </Grid>
