@@ -40,9 +40,9 @@ class StrataInfo extends Component {
             top: 0,
             bottom: 0,
             soilName: '',
-            soilDescription: '',
-            commands: {}
-        }
+            soilDescription: ''
+        },
+        commands: {}
     }
 
   componentDidMount() {

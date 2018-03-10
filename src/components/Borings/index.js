@@ -14,6 +14,7 @@ import Divider from 'material-ui/Divider';
 
 import { InteractiveListWithAddButton } from '../InteractiveList'
 import { withStyles } from 'material-ui/styles';
+import annyang from 'annyang'
 
 const styles = theme => ({
     button: {
@@ -57,39 +58,66 @@ const styles = theme => ({
   });
 
 class Borings extends Component {
+    state = {
+        commands: {},
+    }
+
     constructor(props) {
         super(props)
     }
-    updateBoringInfo = (value, voiceCommand) => {
-        const {firease, project, profile, boringsPath} = this.props
-            
-        Object.keys(project.borings).map(key => {
-            let boring = project.borings[key]
-            console.log('looking at boring', boring)
+
+    componentDidMount() {
+        if(annyang) {
+          var commands = {
+          'create boring': this.addBoringFromVoice,
+          }          
+          annyang.addCommands(commands);
+    
+          this.setState({commands})
+        }
+      }
       
-            if(boring.title.trim().toUpperCase() == voiceCommand.receiver.trim().toUpperCase()) {
-              this.boringInfoShowClicked(key)
-              // break out of mapping?
+      addBoringFromVoice = () => {
+        if(!this.props.selectedBoringKey) {
+          this.addBoring({title: 'New Boring'})
+        } else {
+          this.props.onVoiceCommandError("Error: Must be in boring view to create boring")
+        }
+      }
+
+      componentWillUnmount() {
+        if(annyang) {
+    
+            console.log('unmounting and annyang')
+            if(this.state.commands) {
+                console.log('removing commands', Object.keys(this.state.commands))
+                annyang.removeCommands(Object.keys(this.state.commands));
             }
-          })
-    }
+    
+            this.setState({commands: {}})
+        }
+      }
 
     boringSelected = (key) => {
         this.props.onSelectProjectBoring(key)
         this.props.onBoringSampleDescShow(true)
     }
 
-
     boringInfoShowClicked = (key) => {
         this.props.onSelectProjectBoring(key)
         this.props.onBoringInfoShow(true)
     }
 
+    addBoring = (obj) => {
+        const {firebase, authUser, boringsPath} = this.props
+        let newObj = obj ? obj : {title: 'Click Here to Change Title'}
+        firebase.push(boringsPath, newObj)
+      }
+
   render() {
     const { project, boringsPath, onSelectProjectBoring, firebase, 
         selectedBoringKey, classes} = this.props;
 
-    const addBoring = () => firebase.push(boringsPath, {title: 'Click Here to Change Title'})
     const removeBoring = (key) => firebase.remove(boringsPath + key)
     const editBoringTitle = (key, title) => firebase.update(boringsPath + key, {title: title})
 
@@ -105,7 +133,7 @@ class Borings extends Component {
             removeItem={removeBoring}
             selectItem={this.boringSelected}
             editItemTitle={editBoringTitle}
-            addItem={addBoring}
+            addItem={this.addBoring}
             classes={classes}
             bonusButtonOneTitle={"Info"}
             bonusButtonOneOnClick={this.boringInfoShowClicked}
@@ -161,6 +189,7 @@ const mapDispatchToProps = (dispatch) => ({
     onBoringInfoShow: (showing) => dispatch({ type: 'BORING_INFO_SHOW', showing }),
     onBoringSampleDescShow: (showing) => dispatch({ type: 'BORING_SAMPLE_DESC_SHOW', showing }),
     onSelectProjectBoring: (key) => dispatch({ type: 'USER_PROJECT_BORING_SELECT', key }),
+    onVoiceCommandError: (error) => dispatch({ type: 'VOICE_COMMAND_ERROR', error }),
 });
 
 export default compose(

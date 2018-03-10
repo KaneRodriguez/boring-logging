@@ -7,14 +7,52 @@ import withAuthorization from '../Session/withAuthorization';
 import { InteractiveListWithAddButton } from '../InteractiveList'
 import Borings from '../Borings'
 import withVoiceRecognitionAI from '../VoiceRecognitionAI';
+import annyang from 'annyang'
 
 class Projects extends Component {
+  state = {
+    commands: {}
+  }
+
   constructor(props) {
     super(props)
 
     //this.props.addVoiceCommand('add', 'project', 'with title', this.addProjectWithTitle)
     //this.props.addVoiceCommand('remove', 'project', 'with title', this.removeProjectWithTitle)
   }
+
+  componentDidMount() {
+    if(annyang) {
+      var commands = {
+      'create project': this.addProjectFromVoice,
+      }          
+      annyang.addCommands(commands);
+
+      this.setState({commands})
+    }
+  }
+  
+  addProjectFromVoice = () => {
+    if(!this.props.selectedProjectKey) {
+      this.addProject({title: 'New Project'})
+    } else {
+      this.props.onVoiceCommandError("Error: Must be in project view to create project")
+    }
+  }
+
+  componentWillUnmount() {
+    if(annyang) {
+
+        console.log('unmounting and annyang')
+        if(this.state.commands) {
+            console.log('removing commands', Object.keys(this.state.commands))
+            annyang.removeCommands(Object.keys(this.state.commands));
+        }
+
+        this.setState({commands: {}})
+    }
+  }
+
   removeProjectWithTitle = (title) => {
     const {profile} = this.props
 
@@ -90,6 +128,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   onSelectProject: (key) => dispatch({ type: 'USER_PROJECT_SELECT', key }),
+  onVoiceCommandError: (error) => dispatch({ type: 'VOICE_COMMAND_ERROR', error }),
 });
 
 export default compose(
