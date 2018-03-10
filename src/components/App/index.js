@@ -3,7 +3,7 @@ import {
   BrowserRouter as Router,
   Route,
 } from 'react-router-dom';
-
+import {compose} from 'recompose'
 import Navigation from '../Navigation';
 import LandingPage from '../Landing';
 import SignUpPage from '../SignUp';
@@ -14,27 +14,44 @@ import AccountPage from '../Account';
 import withAuthentication from '../Session/withAuthentication';
 import * as routes from '../../constants/routes';
 import LabelBottomNavigation from '../LabelBottomNavigation'
+import { withStyles } from 'material-ui/styles';
+import Paper from 'material-ui/Paper'
 
 import './index.css';
 
-const App = () =>
-  <Router>
-    <div className="app">
-      <Navigation />
+const styles = theme => ({
+  root: theme.mixins.gutters({
+    paddingTop: 16,
+    paddingBottom: 16,
+    marginTop: theme.spacing.unit * 8,
+    marginBottom: theme.spacing.unit * 8,
+  }),
+});
 
-      <hr/>
+class App extends React.Component {
+  render() {
+    const {classes} = this.props
+    
+    return(
+      <Router>
+        <div className="app">
+          <Navigation />
 
-      <Route exact path={routes.LANDING} component={() => <LandingPage />} />
-      <Route exact path={routes.SIGN_UP} component={() => <SignUpPage />} />
-      <Route exact path={routes.SIGN_IN} component={() => <SignInPage />} />
-      <Route exact path={routes.PASSWORD_FORGET} component={() => <PasswordForgetPage />} />
-      <Route exact path={routes.HOME} component={() => <HomePage />} />
-      <Route exact path={routes.ACCOUNT} component={() => <AccountPage />} />
+          <Paper className={classes.root} elevation={2}>
+            <Route exact path={routes.LANDING} component={() => <LandingPage />} />
+            <Route exact path={routes.SIGN_UP} component={() => <SignUpPage />} />
+            <Route exact path={routes.SIGN_IN} component={() => <SignInPage />} />
+            <Route exact path={routes.PASSWORD_FORGET} component={() => <PasswordForgetPage />} />
+            <Route exact path={routes.HOME} component={() => <HomePage />} />
+            <Route exact path={routes.ACCOUNT} component={() => <AccountPage />} />
+          </Paper>
+          <LabelBottomNavigation />
+        </div>
+      </Router>);
+  }
+}
 
-      <hr/>
-
-      <LabelBottomNavigation />
-    </div>
-  </Router>
-
-export default withAuthentication(App);
+export default compose(
+  withAuthentication,
+  withStyles(styles)
+)(App);

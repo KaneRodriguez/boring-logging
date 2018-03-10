@@ -169,6 +169,7 @@ class BoringInfo extends Component {
 
     let onCloseDialog = () => {        
         this.setState({tmpBoring: {}})
+        this.props.onSelectProjectBoring(null)
         onBoringInfoShow(false)
     }
 
@@ -204,6 +205,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
     onBoringInfoShow: (showing) => dispatch({ type: 'BORING_INFO_SHOW', showing }),
     onGeoLocationFailed: (error) => dispatch({ type: 'SET_GEOLOCATION_FAILED', error }),
+    onSelectProjectBoring: (key) => dispatch({ type: 'USER_PROJECT_BORING_SELECT', key }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps) (

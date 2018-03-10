@@ -6,6 +6,7 @@ import { withFirebase, isLoaded } from 'react-redux-firebase'
 import withAuthorization from '../Session/withAuthorization';
 import { CircularProgress } from 'material-ui/Progress';
 import Projects from '../Projects'
+import {NavTree} from '../Navigation'
 
 class HomePage extends Component {
 
@@ -14,6 +15,7 @@ class HomePage extends Component {
 
     return (
       <div>
+        <NavTree />
         {
           isLoaded(profile)
           ? <Projects />

@@ -11,7 +11,8 @@ const styles = {
   root: {
     width: "100%",
     align: "left",
-    bottom: '0px'
+    bottom: '0px',
+    position: 'fixed',
   },
 };
 

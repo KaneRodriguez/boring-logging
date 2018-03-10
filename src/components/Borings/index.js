@@ -46,10 +46,14 @@ const styles = theme => ({
        root: {
         flexGrow: 1,
       },
-      paper: {
-        padding: theme.spacing.unit * 2,
+      paper: theme.mixins.gutters({
+        paddingTop: 16,
+        paddingBottom: 16,
+        marginTop: theme.spacing.unit * 1,
+        marginBottom: theme.spacing.unit * 1,
         color: theme.palette.text.secondary,
-      },
+
+      })
   });
 
 class Borings extends Component {
@@ -118,7 +122,6 @@ class Borings extends Component {
                     /> 
                 </Paper>
             </Grid>
-            <Divider />
             <Grid item xs={12}>
                 <Paper className={classes.paper}>
                     <Stratas 
