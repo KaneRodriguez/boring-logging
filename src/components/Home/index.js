@@ -17,8 +17,8 @@ class HomePage extends Component {
     return (
       <div>
         <NavTree />
-        <SimpleTable />
-        {
+        
+        {//<SimpleTable />
           isLoaded(profile)
           ? <Projects />
           : <CircularProgress  size={50} />

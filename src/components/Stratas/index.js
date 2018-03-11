@@ -119,7 +119,7 @@ class Stratas extends Component {
                 onClose={(e)=> onCloseDialog()}
                 pageContent={
                     <BoringPlot stratas={boring.stratas}/>
-                   // <BasicPageWithScene />
+                    //<BasicPageWithScene />
                 }
             />
             <Button variant="raised" color="primary" onClick={(e)=> {setStrataPlotShowing(true)}}>
