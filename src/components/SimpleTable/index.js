@@ -17,9 +17,9 @@ const styles = theme => ({
 });
 
 let id = 0;
-function createData(name, calories, fat, carbs, protein) {
+function createData(Name, Top, Bottom, SPT, Su) {
   id += 1;
-  return { id, name, calories, fat, carbs, protein };
+  return { id, Name, Top, Bottom, SPT, Su };
 }
 
 
@@ -27,15 +27,16 @@ class SimpleTable extends React.Component {
 
   state = {
     data: [
-      createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-      createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
+      createData('Silt Clay', 0.0, 6.0, 24, 4.0),
+      createData('Sand', 6.0, 9.0, 37, 0),
     ]
   }
 
   render() {
     const { classes } = this.props;
       let CreateNewTableRow = () => {
-          let n = createData('OnionRings', 356, 16.0, 49, 3.9)
+          let n = createData('Clay', 9, 16.0, 15, 3.5)
+
           console.log("before data", this.state.data, "n", n)
           this.state.data.push(n)
           this.setState({data: this.state.data})
@@ -48,22 +49,22 @@ class SimpleTable extends React.Component {
         <Table className={classes.table}>
           <TableHead>
             <TableRow>
-              <TableCell>Dessert (100g serving)</TableCell>
-              <TableCell numeric>Calories</TableCell>
-              <TableCell numeric>Fat (g)</TableCell>
-              <TableCell numeric>Carbs (g)</TableCell>
-              <TableCell numeric>Protein (g)</TableCell>
+              <TableCell>Layer Name</TableCell>
+              <TableCell numeric>Top Elevation</TableCell>
+              <TableCell numeric>Buttom Elevation</TableCell>
+              <TableCell numeric>SPT</TableCell>
+              <TableCell numeric>Su</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {this.state.data.map(n => {
               return (
                 <TableRow key={n.id}>
-                  <TableCell>{n.name}</TableCell>
-                  <TableCell numeric>{n.calories}</TableCell>
-                  <TableCell numeric>{n.fat}</TableCell>
-                  <TableCell numeric>{n.carbs}</TableCell>
-                  <TableCell numeric>{n.protein}</TableCell>
+                  <TableCell>{n.Name}</TableCell>
+                  <TableCell numeric>{n.Top}</TableCell>
+                  <TableCell numeric>{n.Bottom}</TableCell>
+                  <TableCell numeric>{n.SPT}</TableCell>
+                  <TableCell numeric>{n.Su}</TableCell>
                 </TableRow>
               );
             })}
