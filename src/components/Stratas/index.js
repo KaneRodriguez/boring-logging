@@ -8,7 +8,7 @@ import FullScreenDialog from '../Dialog'
 import Button from 'material-ui/Button'
 import PageWithScene from '../BoringPlot/PageWithScene'
 import BasicPageWithScene from '../BoringPlot/BasicPageWithScene'
-
+import annyang from 'annyang'
 
 
 class Stratas extends Component {
@@ -20,8 +20,42 @@ class Stratas extends Component {
             spt: null,
             pocketPen: null,
             rimak: null
-        }
+        },
+        commands: {},
     }
+
+    componentWillMount() {
+        if(annyang) {
+          var commands = {
+          'create strata': this.addStrataFromVoice,
+          }          
+          console.log('adding commands', commands)
+          annyang.addCommands(commands);
+    
+          this.setState({commands})
+        }
+      }
+      
+      addStrataFromVoice = () => {
+        if(!this.props.selectedBoringKey) {
+          this.props.onSetStrataDialogOpen(true)
+        } else {
+          this.props.onVoiceCommandError("Error: Must be in strata view to create strata")
+        }
+      }
+
+      componentWillUnmount() {
+        if(annyang) {
+    
+            console.log('unmounting and annyang')
+            if(this.state.commands) {
+                console.log('removing commands', Object.keys(this.state.commands))
+                annyang.removeCommands(Object.keys(this.state.commands));
+            }
+    
+            this.setState({commands: {}})
+        }
+      }
 
   componentDidMount() {
     const { boring, selectedBoringStrataKey } = this.props;

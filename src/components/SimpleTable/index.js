@@ -22,49 +22,56 @@ function createData(name, calories, fat, carbs, protein) {
   return { id, name, calories, fat, carbs, protein };
 }
 
-let data = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  
-];
 
-function SimpleTable(props) {
-  const { classes } = props;
-    let CreateNewTableRow = () => {
-        let n = createData('OnionRings', 356, 16.0, 49, 3.9)
-        console.log("before data", data, "n", n)
-        data.push(n)
-        console.log("2 data", data)
-    }
-  return (
-    <Paper className={classes.root}>
-        <Button onClick= {CreateNewTableRow}> Add Row </Button>
-      <Table className={classes.table}>
-        <TableHead>
-          <TableRow>
-            <TableCell>Dessert (100g serving)</TableCell>
-            <TableCell numeric>Calories</TableCell>
-            <TableCell numeric>Fat (g)</TableCell>
-            <TableCell numeric>Carbs (g)</TableCell>
-            <TableCell numeric>Protein (g)</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data.map(n => {
-            return (
-              <TableRow key={n.id}>
-                <TableCell>{n.name}</TableCell>
-                <TableCell numeric>{n.calories}</TableCell>
-                <TableCell numeric>{n.fat}</TableCell>
-                <TableCell numeric>{n.carbs}</TableCell>
-                <TableCell numeric>{n.protein}</TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </Paper>
-  );
+class SimpleTable extends React.Component {
+
+  state = {
+    data: [
+      createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
+      createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
+    ]
+  }
+
+  render() {
+    const { classes } = this.props;
+      let CreateNewTableRow = () => {
+          let n = createData('OnionRings', 356, 16.0, 49, 3.9)
+          console.log("before data", this.state.data, "n", n)
+          this.state.data.push(n)
+          this.setState({data: this.state.data})
+
+          console.log("2 data", this.state.data)
+      }
+    return (
+      <Paper className={classes.root}>
+          <Button onClick= {CreateNewTableRow}> Add Row </Button>
+        <Table className={classes.table}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Dessert (100g serving)</TableCell>
+              <TableCell numeric>Calories</TableCell>
+              <TableCell numeric>Fat (g)</TableCell>
+              <TableCell numeric>Carbs (g)</TableCell>
+              <TableCell numeric>Protein (g)</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {this.state.data.map(n => {
+              return (
+                <TableRow key={n.id}>
+                  <TableCell>{n.name}</TableCell>
+                  <TableCell numeric>{n.calories}</TableCell>
+                  <TableCell numeric>{n.fat}</TableCell>
+                  <TableCell numeric>{n.carbs}</TableCell>
+                  <TableCell numeric>{n.protein}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </Paper>
+    );
+  }
 }
 
 SimpleTable.propTypes = {

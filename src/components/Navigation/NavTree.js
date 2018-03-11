@@ -56,7 +56,7 @@ class NavTree extends React.Component {
     return (
       <div>
         <Paper className={classes.root} elevation={4}>
-          <Typography variant="headline" component="h3">
+          <Typography variant="headline" component="h4">
             {pathView}
           </Typography>
           <Typography component="p">

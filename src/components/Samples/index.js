@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import { InteractiveListWithAddButton } from '../InteractiveList'
 import SampleInfo from './SampleInfo'
+import annyang from 'annyang'
 
 class Samples extends Component {
     state = {
@@ -17,8 +18,42 @@ class Samples extends Component {
             pocketPenTwo: null,
             pocketPenThree: null,
             rimak: null
-        }
+        },
+        commands: {},
     }
+
+    componentWillMount() {
+        if(annyang) {
+          var commands = {
+          'create sample': this.addSampleFromVoice,
+          }          
+          console.log('adding commands', commands)
+          annyang.addCommands(commands);
+    
+          this.setState({commands})
+        }
+      }
+      
+      addSampleFromVoice = () => {
+        if(!this.props.selectedBoringSampleKey) {
+          this.props.onSetSampleDescDialogOpen(true)
+        } else {
+          this.props.onVoiceCommandError("Error: Must be in sample view to create sample")
+        }
+      }
+
+      componentWillUnmount() {
+        if(annyang) {
+    
+            console.log('unmounting and annyang')
+            if(this.state.commands) {
+                console.log('removing commands', Object.keys(this.state.commands))
+                annyang.removeCommands(Object.keys(this.state.commands));
+            }
+    
+            this.setState({commands: {}})
+        }
+      }
 
   componentDidMount() {
     const { boring, selectedBoringSampleKey } = this.props;

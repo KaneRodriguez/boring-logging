@@ -57,6 +57,8 @@ class BoringInfo extends Component {
 
         if(annyang) {
             var commands = {
+                'close (info page)': this.onCloseDialog,
+                'save (info page)': this.onSaveSampleDesc,
                 'change *target to *value': this.updateTmpBoringFromVoice,
                 '*target is *value': this.updateTmpBoringFromVoice,
             }          
@@ -152,26 +154,27 @@ class BoringInfo extends Component {
         this.setState({tmpBoring: tmpBoring})
     }
   }
+    onSaveSampleDesc = () => {
+        this.updateBoring(this.state.tmpBoring)
+        this.props.onBoringInfoShow(false)
+    }
+
+    onCloseDialog = () => {        
+        this.setState({tmpBoring: {}})
+        this.props.onSelectProjectBoring(null)
+        this.props.onBoringInfoShow(false)
+    }
+
+
+    updateBoring = (obj) => this.props.firebase.update(
+        this.props.boringsPath + this.props.selectedBoringKey, 
+        obj
+    )
 
   render() {
     const { boringsPath, boring, classes, selectedBoringKey } = this.props
     const { firebase, onBoringInfoShow, showingBoringInfo, showingBoringSamples} = this.props;
 
-    let updateBoring = (obj) => firebase.update(
-        boringsPath + selectedBoringKey, 
-        obj
-    )
-
-    let onSaveSampleDesc = () => {
-        updateBoring(this.state.tmpBoring)
-        onBoringInfoShow(false)
-    }
-
-    let onCloseDialog = () => {        
-        this.setState({tmpBoring: {}})
-        this.props.onSelectProjectBoring(null)
-        onBoringInfoShow(false)
-    }
 
     return (
       <div>
@@ -179,8 +182,8 @@ class BoringInfo extends Component {
             title="Boring Info"
             fullScreen={true}
             open={showingBoringInfo}
-            onClose={(e)=> onCloseDialog()}
-            onSave={(e)=> onSaveSampleDesc()}
+            onClose={this.onCloseDialog}
+            onSave={this.onSaveSampleDesc}
             pageContent={
                 <BoringInfoInputForms 
                     classes={classes}

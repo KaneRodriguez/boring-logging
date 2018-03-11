@@ -62,10 +62,6 @@ class Borings extends Component {
         commands: {},
     }
 
-    constructor(props) {
-        super(props)
-    }
-
     componentDidMount() {
         if(annyang) {
           var commands = {
@@ -97,6 +93,13 @@ class Borings extends Component {
             this.setState({commands: {}})
         }
       }
+      
+      addBoring = (obj) => {
+        const {firebase, authUser, boringsPath} = this.props
+        let newObj = obj ? obj : {title: 'Click Here to Change Title'}
+        console.log("boringsPath", boringsPath, "obj", obj)
+        firebase.push(boringsPath, newObj)
+      }
 
     boringSelected = (key) => {
         this.props.onSelectProjectBoring(key)
@@ -108,11 +111,7 @@ class Borings extends Component {
         this.props.onBoringInfoShow(true)
     }
 
-    addBoring = (obj) => {
-        const {firebase, authUser, boringsPath} = this.props
-        let newObj = obj ? obj : {title: 'Click Here to Change Title'}
-        firebase.push(boringsPath, newObj)
-      }
+
 
   render() {
     const { project, boringsPath, onSelectProjectBoring, firebase, 
@@ -133,7 +132,7 @@ class Borings extends Component {
             removeItem={removeBoring}
             selectItem={this.boringSelected}
             editItemTitle={editBoringTitle}
-            addItem={this.addBoring}
+            addItem={()=> this.addBoring()}
             classes={classes}
             bonusButtonOneTitle={"Info"}
             bonusButtonOneOnClick={this.boringInfoShowClicked}

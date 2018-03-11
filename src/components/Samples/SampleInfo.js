@@ -50,7 +50,7 @@ class SampleInfo extends Component {
         commands: {}
     }
 
-  componentDidMount() {
+  componentWillMount() {
     const { sample } = this.props;
 
     // we want a clone, not a copy of the reference
