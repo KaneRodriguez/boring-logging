@@ -7,7 +7,6 @@ import withAuthorization from '../Session/withAuthorization';
 import { CircularProgress } from 'material-ui/Progress';
 import Projects from '../Projects'
 import {NavTree} from '../Navigation'
-import SimpleTable from '../SimpleTable'
 
 class HomePage extends Component {
 
@@ -17,8 +16,7 @@ class HomePage extends Component {
     return (
       <div>
         <NavTree />
-        
-        {//<SimpleTable />
+        {
           isLoaded(profile)
           ? <Projects />
           : <CircularProgress  size={50} />

@@ -60,6 +60,8 @@ class SampleInfo extends Component {
 
         if(annyang) {
             var commands = {
+            'close (window)': this.onCloseDialog,
+            'save (window)': this.onSave,
             '*target is *value': this.updateTmpSampleFromVoice,
             'change *target to *value': this.updateTmpSampleFromVoice,
             'change title to *value': (value)=> this.updateTmpSampleFromVoice('TITLE', wordsToNumbers(value, {fuzzy: true})),
@@ -195,20 +197,21 @@ class SampleInfo extends Component {
         }
     }
 
+    onCloseDialog = () => {
+        this.setState({tmpSample: {}})
+        this.props.onSelectBoringSample(null)
+        this.props.onSetSampleDescDialogOpen(false)
+    }
+
+    onSaveSampleDesc = () => {
+        this.updateBoringSample(this.state.tmpSample)
+        this.onCloseDialog()
+    }
+
+
   render() {
     const { samplesPath, onSelectBoringSample, classes, selectedBoringSampleKey, 
          firebase, onSetSampleDescDialogOpen } = this.props;    
-
-    const onCloseDialog = () => {
-        this.setState({tmpSample: {}})
-        onSelectBoringSample(null)
-        onSetSampleDescDialogOpen(false)
-    }
-
-    const onSaveSampleDesc = () => {
-        this.updateBoringSample(this.state.tmpSample)
-        onCloseDialog()
-    }
 
     return (
       <div>
@@ -216,8 +219,8 @@ class SampleInfo extends Component {
             title="Sample Description"
             fullScreen={true}
             open={this.props.sampleDescDialogOpen}
-            onClose={(e)=> onCloseDialog()}
-            onSave={(e)=> onSaveSampleDesc()}
+            onClose={this.onCloseDialog}
+            onSave={this.onSaveSampleDesc}
             pageContent={
                 <SampleInputList 
                     classes={classes}

@@ -101,15 +101,17 @@ class Projects extends Component {
     return (
       <div>
           { !selectedProjectKey 
-            ? <InteractiveListWithAddButton 
+            ? 
+            <div>
+              <InteractiveListWithAddButton 
                 name='Project'
                 items={profile.projects}
                 removeItem={this.removeProject}
                 selectItem={onSelectProject}
                 editItemTitle={editProjectTitle}
                 addItem={()=> this.addProject()}
-                classes={classes}
-            />
+                classes={classes} />
+            </div>
             : <Borings 
                 project={profile.projects[selectedProjectKey]}
                 boringsPath={projectsPath + `${selectedProjectKey}/borings/`}

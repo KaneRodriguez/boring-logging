@@ -15,6 +15,7 @@ import Divider from 'material-ui/Divider';
 import { InteractiveListWithAddButton } from '../InteractiveList'
 import { withStyles } from 'material-ui/styles';
 import annyang from 'annyang'
+import SimpleTable from '../SimpleTable'
 
 const styles = theme => ({
     button: {
@@ -125,7 +126,8 @@ class Borings extends Component {
     return (
       <div>
         { !this.props.showingBoringSamples
-        ? <InteractiveListWithAddButton
+        ? <div>
+            <InteractiveListWithAddButton
             name='Boring'
             extraHeader={project.title}
             items={project.borings}
@@ -137,8 +139,15 @@ class Borings extends Component {
             bonusButtonOneTitle={"Info"}
             bonusButtonOneOnClick={this.boringInfoShowClicked}
             />
+        </div>
         : 
         <div className={classes.root} spacing={4}>
+        
+        { !!selectedBoringKey 
+        ? <SimpleTable 
+            data={project.borings[selectedBoringKey]}/>
+        : null}
+
             <Grid item xs={12}>
                 <Paper className={classes.paper}>
                     <Samples 
@@ -159,6 +168,7 @@ class Borings extends Component {
                     />  
                 </Paper>
             </Grid>
+
         </div>
         }
             { !!selectedBoringKey 

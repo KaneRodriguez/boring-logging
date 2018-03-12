@@ -56,7 +56,7 @@ class StrataInfo extends Component {
     if(annyang) {
         var commands = {
             'close (window)': this.onCloseDialog,
-            'save (window)': this.onSave, // NEED TO TEST save and close commands
+            'save (window)': this.onSave,
             '*target is *value': this.updateTmpStrataFromVoice,
             'change *target to *value': this.updateTmpStrataFromVoice,
             'change title to *value': (value)=> this.updateTmpStrataFromVoice('TITLE', wordsToNumbers(value, {fuzzy: true})),
@@ -121,36 +121,36 @@ class StrataInfo extends Component {
         this.setState({tmpStrata: tmpStrata})
     }
 
+    onCloseDialog = () => {
+        this.setState({tmpStrata: {}})
+        this.props.onSelectBoringStrata(null)
+        this.props.onSetStrataDialogOpen(false)
+    }
 
-  render() {
-    const { stratasPath, onSelectBoringStrata, classes, selectedBoringStrataKey, 
-         firebase, onSetStrataDialogOpen } = this.props;    
+    onSaveStrata = () => {
+        this.updateBoringStrata(this.state.tmpStrata)
+        this.onCloseDialog()
+    }
 
-    const updateBoringStrata = (strata) => {
-        if(selectedBoringStrataKey) {
-            firebase.update(
-                stratasPath + selectedBoringStrataKey, 
+    updateBoringStrata = (strata) => {
+        if(this.props.selectedBoringStrataKey) {
+            this.props.firebase.update(
+                this.props.stratasPath + this.props.selectedBoringStrataKey, 
                 strata
             )
         } else {
             // this is a new one
-            firebase.push(
-                stratasPath, 
+            this.props.firebase.push(
+                this.props.stratasPath, 
                 strata ? strata : {title: 'New Strata'}
             )
         }
     }
 
-    const onCloseDialog = () => {
-        this.setState({tmpStrata: {}})
-        onSelectBoringStrata(null)
-        onSetStrataDialogOpen(false)
-    }
 
-    const onSaveStrata = () => {
-        updateBoringStrata(this.state.tmpStrata)
-        onCloseDialog()
-    }
+  render() {
+    const { stratasPath, onSelectBoringStrata, classes, selectedBoringStrataKey, 
+         firebase, onSetStrataDialogOpen } = this.props;    
     
     return (
       <div>
@@ -158,8 +158,8 @@ class StrataInfo extends Component {
             title="Strata Description"
             fullScreen={true}
             open={this.props.strataDialogOpen}
-            onClose={onCloseDialog}
-            onSave={onSaveStrata}
+            onClose={this.onCloseDialog}
+            onSave={this.onSaveStrata}
             pageContent={
                 <StrataInputList 
                     classes={classes}
