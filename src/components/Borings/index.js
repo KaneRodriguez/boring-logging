@@ -144,8 +144,8 @@ class Borings extends Component {
         <div className={classes.root} spacing={4}>
         
         { !!selectedBoringKey 
-        ? <SimpleTable 
-            data={project.borings[selectedBoringKey]}/>
+        ? null //<SimpleTable 
+            //data={project.borings[selectedBoringKey]}/>
         : null}
 
             <Grid item xs={12}>
