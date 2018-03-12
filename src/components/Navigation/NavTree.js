@@ -51,7 +51,9 @@ class NavTree extends React.Component {
         } else {
             pathHelp = "Create a new project or click the folder icon to see your project's borings." 
         }
-    } 
+    } else {
+      pathHelp = "Create a new project or click the folder icon to see your project's borings." 
+    }
 
     return (
       <div>
