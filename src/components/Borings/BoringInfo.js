@@ -5,9 +5,8 @@ import { withStyles } from 'material-ui/styles';
 import {geolocated} from 'react-geolocated';
 import BoringInfoInputForms from './BoringInfoInputForms'
 import FullScreenDialog from '../Dialog'
-import withVoiceRecognitionAI from '../VoiceRecognitionAI';
 import annyang from 'annyang'
-import wordsToNumbers from 'words-to-numbers'
+import withVoiceRecognitionAI, {enhancedWordsToNumbers} from '../VoiceRecognitionAI'
 
 const styles = theme => ({
   button: {
@@ -94,7 +93,7 @@ class BoringInfo extends Component {
         console.log('updating tmp boring from voice', target, value)
         switch(target.trim().toUpperCase()) {
             case 'GROUND SURFACE ELEVATION': case 'GROUND': case 'SURFACE':  case 'ELEVATION': {
-                this.updateTmpBoring('groundSurfaceElevationFt', wordsToNumbers(value, {fuzzy: false}))
+                this.updateTmpBoring('groundSurfaceElevationFt', enhancedWordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'DRILLER': {
@@ -112,7 +111,7 @@ class BoringInfo extends Component {
                     this.onAutoFillLocation()
                 }
                 else {
-                    this.updateTmpBoring('latitude', wordsToNumbers(value, {fuzzy: false}))
+                    this.updateTmpBoring('latitude', enhancedWordsToNumbers(value, {fuzzy: false}))
                 }
                 break;
             }
@@ -122,9 +121,12 @@ class BoringInfo extends Component {
                     this.onAutoFillLocation()
                 }
                 else {
-                    this.updateTmpBoring('longitude', wordsToNumbers(value, {fuzzy: false}))
+                    this.updateTmpBoring('longitude', enhancedWordsToNumbers(value, {fuzzy: false}))
                 }
                 break;
+            }
+            default: {
+                this.props.onVoiceCommandError('Error: ' + target + ' is not a valid option')
             }
         }
     }
@@ -215,6 +217,7 @@ const mapDispatchToProps = (dispatch) => ({
     onBoringInfoShow: (showing) => dispatch({ type: 'BORING_INFO_SHOW', showing }),
     onGeoLocationFailed: (error) => dispatch({ type: 'SET_GEOLOCATION_FAILED', error }),
     onSelectProjectBoring: (key) => dispatch({ type: 'USER_PROJECT_BORING_SELECT', key }),
+    onVoiceCommandError: (error) => dispatch({ type: 'VOICE_COMMAND_ERROR', error }),
 });
 
 export default compose(

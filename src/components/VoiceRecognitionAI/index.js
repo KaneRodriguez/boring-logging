@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import {withFirebase} from 'react-redux-firebase'
 import annyang from 'annyang'
+import wordsToNumbers from 'words-to-numbers'
+import VoiceHint from './VoiceHint'
 
 const withVoiceRecognitionAI = (Component) => {
 
@@ -82,3 +84,32 @@ const withVoiceRecognitionAI = (Component) => {
 }
 
 export default withVoiceRecognitionAI
+
+const enhancedWordsToNumbers = (value, options) => {
+  if(value.replace) {
+    // replace any pesky 'to'
+    value = value.replace(/to/g, '2')
+
+    // replace any pesky 'too'
+    value = value.replace(/too/g, '2')
+    
+    // replace any pesky 'for'
+    value = value.replace(/for/g, '4')
+  }
+  // just in case there was any 'one' 'two' etc
+  value = wordsToNumbers(value, options)
+
+  // remove all spaces
+  // remove forward slashes
+  if(value.replace) {
+    value = value.replace(/ +/g, "");
+    value = value.replace(/\//g, "")
+
+  }
+  return value
+}
+
+export {
+  enhancedWordsToNumbers,
+  VoiceHint
+}

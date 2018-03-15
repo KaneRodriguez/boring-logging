@@ -5,8 +5,7 @@ import { withStyles } from 'material-ui/styles';
 import FullScreenDialog from '../Dialog'
 import SampleInputList from './SampleInputList'
 import annyang from 'annyang'
-import wordsToNumbers from 'words-to-numbers';
-import withVoiceRecognitionAI from '../VoiceRecognitionAI'
+import withVoiceRecognitionAI, {enhancedWordsToNumbers} from '../VoiceRecognitionAI'
 
 const styles = theme => ({
   button: {
@@ -96,7 +95,6 @@ class SampleInfo extends Component {
     }
 
     updateTmpSampleFromVoice = (target, value) => {
-        console.log('updating tmp smaple from voice', target, value)
         switch(target.trim().toUpperCase()) {
             case 'TITLE': {
                 console.log('updating tmp smaple from voice found title', target, value)
@@ -104,38 +102,40 @@ class SampleInfo extends Component {
                 break;
             }
             case 'TOP': case 'TIME': {
-                this.updateTmpSample('top', wordsToNumbers(value, {fuzzy: false}))
+                this.updateTmpSample('top', enhancedWordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'SPT-1': case 'SPT 1': {
-                this.updateTmpSample('sptOne', wordsToNumbers(value, {fuzzy: false}))
+                this.updateTmpSample('sptOne', enhancedWordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'SPT-2': case 'SPT 2': {
-                this.updateTmpSample('sptTwo', wordsToNumbers(value, {fuzzy: false}))
+                this.updateTmpSample('sptTwo', enhancedWordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'SPT-3': case 'SPT 3': {
-                this.updateTmpSample('sptThree', wordsToNumbers(value, {fuzzy: false}))
+                this.updateTmpSample('sptThree', enhancedWordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'BOTTOM': {
-                this.updateTmpSample('bottom', wordsToNumbers(value, {fuzzy: false}))
+                this.updateTmpSample('bottom', enhancedWordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'PP 1': case 'PP ONE':  case 'PT 1':{
-                this.updateTmpSample('pocketPenOne', wordsToNumbers(value, {fuzzy: false}))
+                this.updateTmpSample('pocketPenOne', enhancedWordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'PP 2': case 'PP TWO': case 'PT 2':{
-                this.updateTmpSample('pocketPenTwo', wordsToNumbers(value, {fuzzy: false}))
+                this.updateTmpSample('pocketPenTwo', enhancedWordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'PP 3': case 'PP THREE': case 'PT 3':{
-                this.updateTmpSample('pocketPenThree', wordsToNumbers(value, {fuzzy: false}))
+                this.updateTmpSample('pocketPenThree', enhancedWordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'SPT': {
+                value = enhancedWordsToNumbers(value)
+
                 if(value < 999) {
                     var ones = Math.floor(value % 10),
                     tens = Math.floor(value/10 % 10),
@@ -147,7 +147,9 @@ class SampleInfo extends Component {
                 }
                 break;
             }
-            case 'POCKET PEN': case 'PAKISTAN': case 'POCKET PATTERN': case 'POCKET': case 'PEN': {
+            case 'POCKET PEN': case 'PAKISTAN': case 'POCKET PATTERN': case 'POCKET': case 'PEN': case 'PAIN': {
+                value = enhancedWordsToNumbers(value)
+
                 if(value < 999) {
                     var ones = Math.floor(value % 10),
                     tens = Math.floor(value/10 % 10),
@@ -159,14 +161,17 @@ class SampleInfo extends Component {
                 }
                 break;
             }
-            // rimak is hard for the ai to understand?
-            case 'RIMAK': case 'REMAC': case 'REMOC': case 'MY MAC': case 'MAC': case 'REACT':  case 'REMAX': {
-                this.updateTmpSample('rimak', wordsToNumbers(value, {fuzzy: false}))
+            case 'RIMAK': case 'REMAC': case 'REMOC': case 'MY MAC': case 'MAC': case 'REACT':  case 'REMAX':
+            case 'RIMAC': case 'REMARK': {
+                this.updateTmpSample('rimak', enhancedWordsToNumbers(value, {fuzzy: false}))
                 break;
             }
-            case 'RECOVERY': {
-                this.updateTmpSample('recovery', wordsToNumbers(value, {fuzzy: false}))
+            case 'RECOVERY': case 'RECOVER': case 'RECOVERING': {
+                this.updateTmpSample('recovery', enhancedWordsToNumbers(value, {fuzzy: false}))
                 break;
+            }
+            default: {
+                this.props.onVoiceCommandError('Error: ' + target + ' is not a valid option')
             }
         }
     }
@@ -176,8 +181,6 @@ class SampleInfo extends Component {
     }
 
     updateTmpSample = (key, value) => {
-        console.log('updating tmp smaple for real', key, value)
-
         let tmpSample = this.state.tmpSample;
         tmpSample[key] = value;
         this.setState({tmpSample: tmpSample})
@@ -246,6 +249,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
     onSelectBoringSample: (key) => dispatch({ type: 'BORING_SAMPLE_SELECT', key }),
     onSetSampleDescDialogOpen: (open) => dispatch({ type: 'SET_SAMPLE_DESC_DIALOG_OPEN', open }),
+    onVoiceCommandError: (error) => dispatch({ type: 'VOICE_COMMAND_ERROR', error }),
 });
 
 export default compose(

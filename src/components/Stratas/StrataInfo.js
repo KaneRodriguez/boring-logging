@@ -5,9 +5,7 @@ import { withStyles } from 'material-ui/styles';
 import FullScreenDialog from '../Dialog'
 import StrataInputList from './StrataInputList'
 import annyang from 'annyang'
-import wordsToNumbers from 'words-to-numbers'
-import VoiceHint from '../VoiceRecognitionAI/VoiceHint'
-import withVoiceRecognitionAI from '../VoiceRecognitionAI'
+import withVoiceRecognitionAI, {enhancedWordsToNumbers, VoiceHint} from '../VoiceRecognitionAI'
 
 const styles = theme => ({
   button: {
@@ -91,11 +89,11 @@ class StrataInfo extends Component {
                 break;
             }
             case 'TOP': {
-                this.updateTmpStrata('top', wordsToNumbers(value, {fuzzy: false}))
+                this.updateTmpStrata('top', enhancedWordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'BOTTOM': {
-                this.updateTmpStrata('bottom', wordsToNumbers(value, {fuzzy: false}))
+                this.updateTmpStrata('bottom', enhancedWordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'SOIL NAME': case 'NAME': case 'OLD MAN': {
@@ -105,7 +103,11 @@ class StrataInfo extends Component {
             case 'SOIL DESCRIPTION': case 'DESCRIPTION': {
                 this.updateTmpStrata('soilDescription', value)
                 break;
-            }
+            }            
+            default: {
+                this.props.onVoiceCommandError('Error: ' + target + ' is not a valid option')
+            }    
+
         }
     }
 
@@ -181,6 +183,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
     onSelectBoringStrata: (key) => dispatch({ type: 'BORING_STRATA_SELECT', key }),
     onSetStrataDialogOpen: (open) => dispatch({ type: 'SET_STRATA_DIALOG_OPEN', open }),
+    onVoiceCommandError: (error) => dispatch({ type: 'VOICE_COMMAND_ERROR', error }),
 });
 
 export default compose(
