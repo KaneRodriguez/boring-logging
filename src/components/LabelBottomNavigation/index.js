@@ -4,7 +4,7 @@ import { withStyles } from 'material-ui/styles';
 import BottomNavigation, { BottomNavigationAction } from 'material-ui/BottomNavigation';
 import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 import Snackbar from 'material-ui/Snackbar';
-
+import VoiceHint from '../VoiceRecognitionAI/VoiceHint'
 import { connect } from 'react-redux';
 
 const styles = {
@@ -36,6 +36,7 @@ class LabelBottomNavigation extends React.Component {
           onClick={(event)=> onBottomNavigationMenuClicked(label)}
           />
           : null }
+          <VoiceHint />
       </BottomNavigation>
       <Snackbar
         //anchorOrigin={{'bottom', 'center' }}

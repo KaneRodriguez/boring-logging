@@ -16,6 +16,7 @@ import { InteractiveListWithAddButton } from '../InteractiveList'
 import { withStyles } from 'material-ui/styles';
 import annyang from 'annyang'
 import SimpleTable from '../SimpleTable'
+import withVoiceRecognitionAI from '../VoiceRecognitionAI';
 
 const styles = theme => ({
     button: {
@@ -68,8 +69,8 @@ class Borings extends Component {
           var commands = {
           'create boring': this.addBoringFromVoice,
           }          
-          annyang.addCommands(commands);
-    
+          this.props.addVoiceCommands(commands)
+
           this.setState({commands})
         }
       }
@@ -85,10 +86,8 @@ class Borings extends Component {
       componentWillUnmount() {
         if(annyang) {
     
-            console.log('unmounting and annyang')
             if(this.state.commands) {
-                console.log('removing commands', Object.keys(this.state.commands))
-                annyang.removeCommands(Object.keys(this.state.commands));
+                this.props.removeVoiceCommands(this.state.commands);
             }
     
             this.setState({commands: {}})
@@ -202,6 +201,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default compose(
+    withVoiceRecognitionAI,
     connect(mapStateToProps, mapDispatchToProps),
     withStyles(styles),
 )(Borings);

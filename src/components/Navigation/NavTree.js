@@ -44,15 +44,15 @@ class NavTree extends React.Component {
 
                 pathView += ' -> ' + boring.title
 
-                pathHelp = `Create samples and stratas and view graphical data with the "Show Strata Plot" button.`
+                pathHelp = `Try saying, "Create Sample" or "Create Strata", and view graphical data with the "Show Strata Plot" button.`
             } else {
-                pathHelp = `Create new borings, select info to set basic information, and click the folder to see samples and stratas.`
+                pathHelp = `Try saying, "Create Boring", or select info to set basic information, and click the folder to see samples and stratas.`
             }
         } else {
-            pathHelp = "Create a new project or click the folder icon to see your project's borings." 
+            pathHelp = 'Try saying, "Create project" or click the folder icon to see your project\'s borings.' 
         }
     } else {
-      pathHelp = "Create a new project or click the folder icon to see your project's borings." 
+      pathHelp = 'Try saying, "Create project" or click the folder icon to see your project\'s borings.' 
     }
 
     return (

@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-
+import { compose } from 'recompose'
 import { withStyles } from 'material-ui/styles';
 import FullScreenDialog from '../Dialog'
 import SampleInputList from './SampleInputList'
 import annyang from 'annyang'
 import wordsToNumbers from 'words-to-numbers';
+import withVoiceRecognitionAI from '../VoiceRecognitionAI'
 
 const styles = theme => ({
   button: {
@@ -50,7 +51,7 @@ class SampleInfo extends Component {
         commands: {}
     }
 
-  componentWillMount() {
+  componentDidMount() {
     const { sample } = this.props;
 
     // we want a clone, not a copy of the reference
@@ -60,25 +61,24 @@ class SampleInfo extends Component {
 
         if(annyang) {
             var commands = {
-            'close (window)': this.onCloseDialog,
-            'save (window)': this.onSave,
-            '*target is *value': this.updateTmpSampleFromVoice,
-            'change *target to *value': this.updateTmpSampleFromVoice,
-            'change title to *value': (value)=> this.updateTmpSampleFromVoice('TITLE', wordsToNumbers(value, {fuzzy: true})),
-            'change top to *value': (value)=> this.updateTmpSampleFromVoice('TOP', wordsToNumbers(value, {fuzzy: true})),
-            'change bottom to *value': (value)=> this.updateTmpSampleFromVoice('BOTTOM', wordsToNumbers(value, {fuzzy: true})),
-            'change PP 1 to *value': (value)=> this.updateTmpSampleFromVoice('PP 1', wordsToNumbers(value, {fuzzy: true})),
-            'change PP 1 2 *value': (value)=> this.updateTmpSampleFromVoice('PP 1', wordsToNumbers(value, {fuzzy: true})),
-            'change PP 2 to *value': (value)=> this.updateTmpSampleFromVoice('PP 2', wordsToNumbers(value, {fuzzy: true})),
-            'change PP 3 to *value': (value)=> this.updateTmpSampleFromVoice('PP 3', wordsToNumbers(value, {fuzzy: true})),
-            'change SPT-1 to *value': (value)=> this.updateTmpSampleFromVoice('SPT-1', wordsToNumbers(value, {fuzzy: true})),
-            'change SPT-2 to *value': (value)=> this.updateTmpSampleFromVoice('SPT-2', wordsToNumbers(value, {fuzzy: true})),
-            'change SPT-3 to *value': (value)=> this.updateTmpSampleFromVoice('SPT-3', wordsToNumbers(value, {fuzzy: true})),
-            'change Rimak to *value': (value)=> this.updateTmpSampleFromVoice('rimak', wordsToNumbers(value, {fuzzy: true})),
-            'change recovery to *value': (value)=> this.updateTmpSampleFromVoice('recovery', wordsToNumbers(value, {fuzzy: true})),
+            'close': this.onCloseDialog,
+            'save': this.onSaveSampleDesc,
+            '*target is *value': this.updateTmpSampleFromVoice
+            // 'title is *value': (value)=> this.updateTmpSampleFromVoice('TITLE', wordsToNumbers(value, {fuzzy: true})),
+            // 'top is *value': (value)=> this.updateTmpSampleFromVoice('TOP', wordsToNumbers(value, {fuzzy: true})),
+            // 'bottom is *value': (value)=> this.updateTmpSampleFromVoice('BOTTOM', wordsToNumbers(value, {fuzzy: true})),
+            // 'PP 1 is *value': (value)=> this.updateTmpSampleFromVoice('PP 1', wordsToNumbers(value, {fuzzy: true})),
+            // 'PP 1 is *value': (value)=> this.updateTmpSampleFromVoice('PP 1', wordsToNumbers(value, {fuzzy: true})),
+            // 'PP 2 is *value': (value)=> this.updateTmpSampleFromVoice('PP 2', wordsToNumbers(value, {fuzzy: true})),
+            // 'PP 3 is *value': (value)=> this.updateTmpSampleFromVoice('PP 3', wordsToNumbers(value, {fuzzy: true})),
+            // 'SPT-1 is *value': (value)=> this.updateTmpSampleFromVoice('SPT-1', wordsToNumbers(value, {fuzzy: true})),
+            // 'SPT-2 is *value': (value)=> this.updateTmpSampleFromVoice('SPT-2', wordsToNumbers(value, {fuzzy: true})),
+            // 'SPT-3 is *value': (value)=> this.updateTmpSampleFromVoice('SPT-3', wordsToNumbers(value, {fuzzy: true})),
+            // 'Rimak is *value': (value)=> this.updateTmpSampleFromVoice('rimak', wordsToNumbers(value, {fuzzy: true})),
+            // 'recovery is *value': (value)=> this.updateTmpSampleFromVoice('recovery', wordsToNumbers(value, {fuzzy: true})),
             }          
-            console.log('mouting and annyang')
-            annyang.addCommands(commands);
+
+            this.props.addVoiceCommands(commands);
 
             this.setState({commands})
         }
@@ -87,10 +87,8 @@ class SampleInfo extends Component {
     componentWillUnmount() {
         if(annyang) {
 
-            console.log('unmounting and annyang')
             if(this.state.commands) {
-                console.log('removing commands', Object.keys(this.state.commands))
-                annyang.removeCommands(Object.keys(this.state.commands));
+                this.props.removeVoiceCommands(this.state.commands);            
             }
 
             this.setState({commands: {}})
@@ -98,41 +96,43 @@ class SampleInfo extends Component {
     }
 
     updateTmpSampleFromVoice = (target, value) => {
+        console.log('updating tmp smaple from voice', target, value)
         switch(target.trim().toUpperCase()) {
             case 'TITLE': {
+                console.log('updating tmp smaple from voice found title', target, value)
                 this.updateTmpSample('title', value)
                 break;
             }
             case 'TOP': case 'TIME': {
-                this.updateTmpSample('top', value)
+                this.updateTmpSample('top', wordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'SPT-1': case 'SPT 1': {
-                this.updateTmpSample('sptOne', value)
+                this.updateTmpSample('sptOne', wordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'SPT-2': case 'SPT 2': {
-                this.updateTmpSample('sptTwo', value)
+                this.updateTmpSample('sptTwo', wordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'SPT-3': case 'SPT 3': {
-                this.updateTmpSample('sptThree', value)
+                this.updateTmpSample('sptThree', wordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'BOTTOM': {
-                this.updateTmpSample('bottom', value)
+                this.updateTmpSample('bottom', wordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'PP 1': case 'PP ONE':  case 'PT 1':{
-                this.updateTmpSample('pocketPenOne', value)
+                this.updateTmpSample('pocketPenOne', wordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'PP 2': case 'PP TWO': case 'PT 2':{
-                this.updateTmpSample('pocketPenTwo', value)
+                this.updateTmpSample('pocketPenTwo', wordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'PP 3': case 'PP THREE': case 'PT 3':{
-                this.updateTmpSample('pocketPenThree', value)
+                this.updateTmpSample('pocketPenThree', wordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'SPT': {
@@ -161,11 +161,11 @@ class SampleInfo extends Component {
             }
             // rimak is hard for the ai to understand?
             case 'RIMAK': case 'REMAC': case 'REMOC': case 'MY MAC': case 'MAC': case 'REACT':  case 'REMAX': {
-                this.updateTmpSample('rimak', value)
+                this.updateTmpSample('rimak', wordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'RECOVERY': {
-                this.updateTmpSample('recovery', value)
+                this.updateTmpSample('recovery', wordsToNumbers(value, {fuzzy: false}))
                 break;
             }
         }
@@ -176,6 +176,8 @@ class SampleInfo extends Component {
     }
 
     updateTmpSample = (key, value) => {
+        console.log('updating tmp smaple for real', key, value)
+
         let tmpSample = this.state.tmpSample;
         tmpSample[key] = value;
         this.setState({tmpSample: tmpSample})
@@ -221,6 +223,7 @@ class SampleInfo extends Component {
             open={this.props.sampleDescDialogOpen}
             onClose={this.onCloseDialog}
             onSave={this.onSaveSampleDesc}
+            voiceHint={true}
             pageContent={
                 <SampleInputList 
                     classes={classes}
@@ -245,4 +248,8 @@ const mapDispatchToProps = (dispatch) => ({
     onSetSampleDescDialogOpen: (open) => dispatch({ type: 'SET_SAMPLE_DESC_DIALOG_OPEN', open }),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps) (withStyles(styles) (SampleInfo));
+export default compose(
+    withVoiceRecognitionAI,
+    connect(mapStateToProps, mapDispatchToProps),
+    withStyles(styles)
+ )(SampleInfo)

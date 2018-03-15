@@ -14,19 +14,12 @@ class Projects extends Component {
     commands: {}
   }
 
-  constructor(props) {
-    super(props)
-
-    //this.props.addVoiceCommand('add', 'project', 'with title', this.addProjectWithTitle)
-    //this.props.addVoiceCommand('remove', 'project', 'with title', this.removeProjectWithTitle)
-  }
-
   componentDidMount() {
     if(annyang) {
       var commands = {
-      'create project': this.addProjectFromVoice,
+        'create project': this.addProjectFromVoice,
       }          
-      annyang.addCommands(commands);
+      this.props.addVoiceCommands(commands)
 
       this.setState({commands})
     }
@@ -43,10 +36,8 @@ class Projects extends Component {
   componentWillUnmount() {
     if(annyang) {
 
-        console.log('unmounting and annyang')
         if(this.state.commands) {
-            console.log('removing commands', Object.keys(this.state.commands))
-            annyang.removeCommands(Object.keys(this.state.commands));
+            this.props.removeVoiceCommands(this.state.commands)
         }
 
         this.setState({commands: {}})

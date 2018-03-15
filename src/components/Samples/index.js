@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-
+import { compose } from 'recompose'
 import { InteractiveListWithAddButton } from '../InteractiveList'
 import SampleInfo from './SampleInfo'
 import annyang from 'annyang'
+import withVoiceRecognitionAI from '../VoiceRecognitionAI'
 
 class Samples extends Component {
     state = {
@@ -27,9 +28,8 @@ class Samples extends Component {
           var commands = {
           'create sample': this.addSampleFromVoice,
           }          
-          console.log('adding commands', commands)
-          annyang.addCommands(commands);
-    
+          this.props.addVoiceCommands(commands);
+
           this.setState({commands})
         }
       }
@@ -45,10 +45,8 @@ class Samples extends Component {
       componentWillUnmount() {
         if(annyang) {
     
-            console.log('unmounting and annyang')
             if(this.state.commands) {
-                console.log('removing commands', Object.keys(this.state.commands))
-                annyang.removeCommands(Object.keys(this.state.commands));
+                this.props.removeVoiceCommands(this.state.commands);            
             }
     
             this.setState({commands: {}})
@@ -140,4 +138,7 @@ const mapDispatchToProps = (dispatch) => ({
     onSetSampleDescDialogOpen: (open) => dispatch({ type: 'SET_SAMPLE_DESC_DIALOG_OPEN', open }),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Samples)
+export default compose(
+    withVoiceRecognitionAI,
+    connect(mapStateToProps, mapDispatchToProps)
+)(Samples)

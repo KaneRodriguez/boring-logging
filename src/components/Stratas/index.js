@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-
+import { compose } from 'recompose'
 import { InteractiveListWithAddButton } from '../InteractiveList'
 import StrataInfo from './StrataInfo'
 import BoringPlot from '../BoringPlot'
@@ -9,7 +9,7 @@ import Button from 'material-ui/Button'
 import PageWithScene from '../BoringPlot/PageWithScene'
 import BasicPageWithScene from '../BoringPlot/BasicPageWithScene'
 import annyang from 'annyang'
-
+import withVoiceRecognitionAI from '../VoiceRecognitionAI';
 
 class Stratas extends Component {
     state = {
@@ -29,9 +29,8 @@ class Stratas extends Component {
           var commands = {
           'create strata': this.addStrataFromVoice,
           }          
-          console.log('adding commands', commands)
-          annyang.addCommands(commands);
-    
+          this.props.addVoiceCommands(commands)
+  
           this.setState({commands})
         }
       }
@@ -47,10 +46,8 @@ class Stratas extends Component {
       componentWillUnmount() {
         if(annyang) {
     
-            console.log('unmounting and annyang')
             if(this.state.commands) {
-                console.log('removing commands', Object.keys(this.state.commands))
-                annyang.removeCommands(Object.keys(this.state.commands));
+                this.props.removeVoiceCommands(this.state.commands)
             }
     
             this.setState({commands: {}})
@@ -163,4 +160,7 @@ const mapDispatchToProps = (dispatch) => ({
     setStrataPlotShowing: (showing) => dispatch({ type: 'STRATA_PLOT_SHOW', showing })
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Stratas)
+export default compose(
+    withVoiceRecognitionAI,
+    connect(mapStateToProps, mapDispatchToProps),
+  )(Stratas);  

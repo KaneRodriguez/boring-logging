@@ -9,6 +9,7 @@ import Typography from 'material-ui/Typography';
 import IconButton from 'material-ui/IconButton';
 import MenuIcon from 'material-ui-icons/Menu';
 import Menu, { MenuItem } from 'material-ui/Menu';
+import ToggleVoiceIcon from '../VoiceRecognitionAI/ToggleVoiceIcon';
 
 import * as routes from '../../constants/routes';
 import SignOutButton from '../SignOut'
@@ -88,6 +89,9 @@ class MenuAppBar extends React.Component {
             <Typography variant="title" color="inherit" className={classes.flex}>
               Boring Logging
             </Typography>
+            {authUser && (
+              <ToggleVoiceIcon />
+            )}
           </Toolbar>
         </AppBar>
       </div>

@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-
+import { compose } from 'recompose'
 import { withStyles } from 'material-ui/styles';
 import {geolocated} from 'react-geolocated';
 import BoringInfoInputForms from './BoringInfoInputForms'
 import FullScreenDialog from '../Dialog'
-// import withVoiceRecognitionAI from '../VoiceRecognitionAI';
+import withVoiceRecognitionAI from '../VoiceRecognitionAI';
 import annyang from 'annyang'
+import wordsToNumbers from 'words-to-numbers'
 
 const styles = theme => ({
   button: {
@@ -30,7 +31,7 @@ const styles = theme => ({
   fab: {
     position: 'relative',
     left: theme.spacing.unit * 2,
-  },
+  }
 });
 
 class BoringInfo extends Component {
@@ -46,7 +47,7 @@ class BoringInfo extends Component {
         commands: {}
     }
 
-  componentDidMount() {
+    componentWillMount() {
         const { boring } = this.props;
 
         let tmpBoring = JSON.parse(JSON.stringify(boring)); // we want a clone, not a copy of the reference
@@ -55,27 +56,28 @@ class BoringInfo extends Component {
 
         this.onAutoFillLocation = this.onAutoFillLocation.bind(this)
 
-        if(annyang) {
-            var commands = {
-                'close (info page)': this.onCloseDialog,
-                'save (info page)': this.onSaveSampleDesc,
-                'change *target to *value': this.updateTmpBoringFromVoice,
-                '*target is *value': this.updateTmpBoringFromVoice,
-            }          
-            console.log('mounting and annyang')
-            annyang.addCommands(commands);
+        var commands = {
+            'close': this.onCloseDialog,
+            'save': this.onSaveSampleDesc,
+            '*target is *value': this.updateTmpBoringFromVoice
+            //'latitude is using my location': () => this.updateTmpBoringFromVoice('LATITUDE', 'USING MY LOCATION'),
+            //'longitude is using my location': () => this.updateTmpBoringFromVoice('LATITUDE', 'USING MY LOCATION'),
+           // 'change *target to *value': this.updateTmpBoringFromVoice,
+        }  
+        this.setState({commands})        
+    }
 
-            this.setState({commands})
+  componentDidMount() {
+        if(annyang) {
+            this.props.addVoiceCommands(this.state.commands)
         }
     }
 
     componentWillUnmount() {
         if(annyang) {
 
-            console.log('unmounting annyang')
             if(this.state.commands) {
-                console.log('removing commands', Object.keys(this.state.commands))
-                annyang.removeCommands(Object.keys(this.state.commands));
+                this.props.removeVoiceCommands(this.state.commands)
             }
 
             this.setState({commands: {}})
@@ -89,9 +91,10 @@ class BoringInfo extends Component {
     }
 
     updateTmpBoringFromVoice = (target, value) => {
+        console.log('updating tmp boring from voice', target, value)
         switch(target.trim().toUpperCase()) {
             case 'GROUND SURFACE ELEVATION': case 'GROUND': case 'SURFACE':  case 'ELEVATION': {
-                this.updateTmpBoring('groundSurfaceElevationFt', value)
+                this.updateTmpBoring('groundSurfaceElevationFt', wordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'DRILLER': {
@@ -109,7 +112,7 @@ class BoringInfo extends Component {
                     this.onAutoFillLocation()
                 }
                 else {
-                    this.updateTmpBoring('latitude', value)
+                    this.updateTmpBoring('latitude', wordsToNumbers(value, {fuzzy: false}))
                 }
                 break;
             }
@@ -119,7 +122,7 @@ class BoringInfo extends Component {
                     this.onAutoFillLocation()
                 }
                 else {
-                    this.updateTmpBoring('longitude', value)
+                    this.updateTmpBoring('longitude', wordsToNumbers(value, {fuzzy: false}))
                 }
                 break;
             }
@@ -184,13 +187,16 @@ class BoringInfo extends Component {
             open={showingBoringInfo}
             onClose={this.onCloseDialog}
             onSave={this.onSaveSampleDesc}
+            voiceHint={true}
             pageContent={
-                <BoringInfoInputForms 
-                    classes={classes}
-                    handleChange={this.updateTmpBoringFromEvent}
-                    boring={this.state.tmpBoring}
-                    onAutoFillLocation={this.onAutoFillLocation}
-                />
+                <div>
+                    <BoringInfoInputForms 
+                        classes={classes}
+                        handleChange={this.updateTmpBoringFromEvent}
+                        boring={this.state.tmpBoring}
+                        onAutoFillLocation={this.onAutoFillLocation}
+                    />
+                </div>
             }
         />
 
@@ -211,12 +217,14 @@ const mapDispatchToProps = (dispatch) => ({
     onSelectProjectBoring: (key) => dispatch({ type: 'USER_PROJECT_BORING_SELECT', key }),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps) (
-    withStyles(styles)(
-        geolocated({
-            positionOptions: {
-              enableHighAccuracy: true,
-            },
-            userDecisionTimeout: 5000,
-          })(BoringInfo)
-    ));
+export default compose(
+    withVoiceRecognitionAI,
+    connect(mapStateToProps, mapDispatchToProps),
+    withStyles(styles),
+    geolocated({
+        positionOptions: {
+            enableHighAccuracy: true,
+        },
+        userDecisionTimeout: 5000,
+        })
+    )(BoringInfo);

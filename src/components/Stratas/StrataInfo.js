@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-
+import { compose } from 'recompose'
 import { withStyles } from 'material-ui/styles';
 import FullScreenDialog from '../Dialog'
 import StrataInputList from './StrataInputList'
 import annyang from 'annyang'
 import wordsToNumbers from 'words-to-numbers'
+import VoiceHint from '../VoiceRecognitionAI/VoiceHint'
+import withVoiceRecognitionAI from '../VoiceRecognitionAI'
 
 const styles = theme => ({
   button: {
@@ -55,19 +57,17 @@ class StrataInfo extends Component {
 
     if(annyang) {
         var commands = {
-            'close (window)': this.onCloseDialog,
-            'save (window)': this.onSave,
-            '*target is *value': this.updateTmpStrataFromVoice,
-            'change *target to *value': this.updateTmpStrataFromVoice,
-            'change title to *value': (value)=> this.updateTmpStrataFromVoice('TITLE', wordsToNumbers(value, {fuzzy: true})),
-            'change top to *value': (value)=> this.updateTmpStrataFromVoice('TOP', wordsToNumbers(value, {fuzzy: true})),
-            'change bottom to *value': (value)=> this.updateTmpStrataFromVoice('BOTTOM', wordsToNumbers(value, {fuzzy: true})),
-            'change soil name to *value': (value)=> this.updateTmpStrataFromVoice('SOIL NAME', wordsToNumbers(value, {fuzzy: true})),
-            'change soil description to *value': (value)=> this.updateTmpStrataFromVoice('SOIL DESCRIPTION', wordsToNumbers(value, {fuzzy: true})),
+            'close': this.onCloseDialog,
+            'save': this.onSaveStrata,
+            '*target is *value': this.updateTmpStrataFromVoice
+        //     'title is *value': (value)=> this.updateTmpStrataFromVoice('TITLE', wordsToNumbers(value, {fuzzy: true})),
+        //     'top is *value': (value)=> this.updateTmpStrataFromVoice('TOP', wordsToNumbers(value, {fuzzy: true})),
+        //     'bottom is *value': (value)=> this.updateTmpStrataFromVoice('BOTTOM', wordsToNumbers(value, {fuzzy: true})),
+        //     'soil name is *value': (value)=> this.updateTmpStrataFromVoice('SOIL NAME', wordsToNumbers(value, {fuzzy: true})),
+        //     'soil description is *value': (value)=> this.updateTmpStrataFromVoice('SOIL DESCRIPTION', wordsToNumbers(value, {fuzzy: true})),
         }     
 
-        console.log('mounting and annyang')
-        annyang.addCommands(commands);
+        this.props.addVoiceCommands(commands);
 
         this.setState({commands})
     }
@@ -76,10 +76,8 @@ class StrataInfo extends Component {
     componentWillUnmount() {
         if(annyang) {
 
-            console.log('unmounting annyang')
             if(this.state.commands) {
-                console.log('removing commands', Object.keys(this.state.commands))
-                annyang.removeCommands(Object.keys(this.state.commands));
+                this.props.removeVoiceCommands(this.state.commands);
             }
 
             this.setState({commands: {}})
@@ -93,11 +91,11 @@ class StrataInfo extends Component {
                 break;
             }
             case 'TOP': {
-                this.updateTmpStrata('top', value)
+                this.updateTmpStrata('top', wordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'BOTTOM': {
-                this.updateTmpStrata('bottom', value)
+                this.updateTmpStrata('bottom', wordsToNumbers(value, {fuzzy: false}))
                 break;
             }
             case 'SOIL NAME': case 'NAME': case 'OLD MAN': {
@@ -160,6 +158,7 @@ class StrataInfo extends Component {
             open={this.props.strataDialogOpen}
             onClose={this.onCloseDialog}
             onSave={this.onSaveStrata}
+            voiceHint={true}
             pageContent={
                 <StrataInputList 
                     classes={classes}
@@ -184,4 +183,8 @@ const mapDispatchToProps = (dispatch) => ({
     onSetStrataDialogOpen: (open) => dispatch({ type: 'SET_STRATA_DIALOG_OPEN', open }),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps) (withStyles(styles) (StrataInfo));
+export default compose(
+    withVoiceRecognitionAI,
+    connect(mapStateToProps, mapDispatchToProps),
+    withStyles(styles),
+)(StrataInfo)

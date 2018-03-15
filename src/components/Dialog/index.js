@@ -9,6 +9,7 @@ import IconButton from 'material-ui/IconButton';
 import Typography from 'material-ui/Typography';
 import CloseIcon from 'material-ui-icons/Close';
 import Slide from 'material-ui/transitions/Slide';
+import VoiceHint from '../VoiceRecognitionAI/VoiceHint'
 
 const styles = theme => ({
   appBar: {
@@ -37,7 +38,7 @@ class FullScreenDialog extends React.Component {
   };
 
   render() {
-    const { fullScreen, classes, pageContent, title, open, onClose, onSave } = this.props;
+    const { fullScreen, classes, pageContent, title, open, onClose, onSave, voiceHint } = this.props;
     return (
       <div>
         <Dialog
@@ -64,6 +65,9 @@ class FullScreenDialog extends React.Component {
             </Toolbar>
           </AppBar>
           {pageContent}
+          {!!voiceHint
+          ? <VoiceHint fixed={true}/>
+          : null}
         </Dialog>
       </div>
     );
