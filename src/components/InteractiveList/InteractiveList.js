@@ -28,6 +28,9 @@ const styles = theme => ({
   title: {
     margin: `${theme.spacing.unit * 4}px 0 ${theme.spacing.unit * 2}px`,
   },
+  listItemText: {
+    overflowX: 'auto',
+  },
 });
 
 // TODO: this is for firebase objects, make it work with
@@ -37,6 +40,7 @@ class InteractiveList extends React.Component {
     dense: false,
     items: [],
     editKey: null,
+    editTitle: '',
   };
   constructor(props) {
     super(props)
@@ -60,13 +64,13 @@ class InteractiveList extends React.Component {
     }
   }
 
-  editItem(key) {
+  editItem(key, item) {
     if(this.props.editItem) {
       this.props.editItem(key)
     } else {
       console.log('No editItem func given')
     }
-    this.setState({editKey: key})
+    this.setState({editKey: key, editTitle: item.title})
   }
   editItemTitle(key, title) {
     if(this.props.editItemTitle) {
@@ -81,7 +85,18 @@ class InteractiveList extends React.Component {
     if(e.key === 'Enter' && e.target.value !== "")
     {
       this.editItemTitle(key, e.target.value);
+      
       e.preventDefault();
+    } else if(e.key !== 'Enter') { 
+      this.setState({editTitle: e.target.value + e.key})
+    } else {
+      // TODO: display error
+    }
+  }
+
+  itemEditKeyDown = (e, key) => {
+    if(e.keyCode == 8 && e.target.value !== "") { // backspace
+      this.setState({editTitle: e.target.value.slice(0,-1)})
     }
   }
 
@@ -106,17 +121,18 @@ class InteractiveList extends React.Component {
                     {editKey !== key
                     ?
                     <ListItemText
+                      className={classes.listItemText}
                       primary={listItem.title}
                       secondary={secondary}
-                      onClick={this.editItem.bind(this, key)}
+                      onClick={this.editItem.bind(this, key, listItem)}
                     />
                     :
                       <TextField 
                       id="with-placeholder"
-                      label={listItem.title}
-                      placeholder={'New Title'}
                       margin="normal"
+                      value={this.state.editTitle}
                       onKeyPress={(e)=> this.itemEditKeyPress(e, key)}
+                      onKeyDown={(e)=> this.itemEditKeyDown(e, key)}
                       />  
                     }
                     { !!this.props.bonusButtonOneTitle
