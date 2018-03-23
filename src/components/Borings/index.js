@@ -17,6 +17,7 @@ import { withStyles } from 'material-ui/styles';
 import annyang from 'annyang'
 import SimpleTable from '../SimpleTable'
 import withVoiceRecognitionAI from '../VoiceRecognitionAI';
+import SimpleMap from '../SimpleMap';
 
 const styles = theme => ({
     button: {
@@ -122,6 +123,24 @@ class Borings extends Component {
 
     let boring = project.borings ? project.borings[selectedBoringKey] : null
 
+    // we want the lat lon pairs
+    let boringLocations = []
+
+    if(project.borings) {
+        Object.keys(project.borings).map((key)=> {
+            
+            let boringInfo = project.borings[key]
+
+            if (boringInfo.latitude && boringInfo.longitude && boringInfo.title) {   
+                boringLocations.push({
+                    title:     boringInfo.title,
+                    latitude:  boringInfo.latitude, 
+                    longitude: boringInfo.longitude,
+                })
+            }
+        })
+    }
+
     return (
       <div>
         { !this.props.showingBoringSamples
@@ -137,6 +156,9 @@ class Borings extends Component {
             classes={classes}
             bonusButtonOneTitle={"Info"}
             bonusButtonOneOnClick={this.boringInfoShowClicked}
+            />
+            <SimpleMap
+            locations={boringLocations}
             />
         </div>
         : 

@@ -53,8 +53,6 @@ class BoringInfo extends Component {
 
         this.setState({tmpBoring: tmpBoring})
 
-        this.onAutoFillLocation = this.onAutoFillLocation.bind(this)
-
         var commands = {
             'close': this.onCloseDialog,
             'save': this.onSaveSampleDesc,
@@ -135,7 +133,7 @@ class BoringInfo extends Component {
         this.updateTmpBoring(name, event.target.value)
     }
 
-  onAutoFillLocation(event) {
+  onAutoFillLocation = (event) => {
       const { onGeoLocationFailed } = this.props;
 
     // with geolocation we have access to:
@@ -151,8 +149,11 @@ class BoringInfo extends Component {
     } else if(!this.props.isGeolocationEnabled) {
         onGeoLocationFailed('Geolocation is not enabled')
     }
+    else if(!this.props.coords) {
+        onGeoLocationFailed('Getting location data...')
+    }
     else {
-        let tmpBoring = this.state.tmpBoring;
+        let tmpBoring = this.state.tmpBoring
         tmpBoring.latitude = this.props.coords.latitude
         tmpBoring.longitude = this.props.coords.longitude
 

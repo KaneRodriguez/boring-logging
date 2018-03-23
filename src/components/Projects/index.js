@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { withFirebase } from 'react-redux-firebase'
-
 import withAuthorization from '../Session/withAuthorization';
 import { InteractiveListWithAddButton } from '../InteractiveList'
 import Borings from '../Borings'
