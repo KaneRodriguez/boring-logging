@@ -29,7 +29,12 @@ const styles = theme => ({
     margin: `${theme.spacing.unit * 4}px 0 ${theme.spacing.unit * 2}px`,
   },
   listItemText: {
-    overflowX: 'auto',
+    overflowX: 'hidden',
+    marginRight: theme.spacing.unit * 3,
+    paddingRight: theme.spacing.unit * 1
+  },
+  extraButton: {
+    marginRight: theme.spacing.unit * 3
   },
 });
 
@@ -42,12 +47,7 @@ class InteractiveList extends React.Component {
     editKey: null,
     editTitle: '',
   };
-  constructor(props) {
-    super(props)
 
-    this.itemEditKeyPress = this.itemEditKeyPress.bind(this)
-    this.editItemTitle = this.editItemTitle.bind(this)
-  }
   removeItem(key) {
     if(this.props.removeItem) {
       this.props.removeItem(key)
@@ -72,7 +72,8 @@ class InteractiveList extends React.Component {
     }
     this.setState({editKey: key, editTitle: item.title})
   }
-  editItemTitle(key, title) {
+
+  editItemTitle = (key, title) => {
     if(this.props.editItemTitle) {
       this.props.editItemTitle(key, title)
       this.setState({editKey: ''})
@@ -80,8 +81,12 @@ class InteractiveList extends React.Component {
       console.log('No editItemTitle func given');
     }
   }
+  itemEditBlur = (e, key) => {
+    e.key = 'Enter'
+    this.itemEditKeyPress(e, key)
+  }
 
-  itemEditKeyPress(e, key) { 
+  itemEditKeyPress = (e, key) => { 
     if(e.key === 'Enter' && e.target.value !== "")
     {
       this.editItemTitle(key, e.target.value);
@@ -133,10 +138,11 @@ class InteractiveList extends React.Component {
                       value={this.state.editTitle}
                       onKeyPress={(e)=> this.itemEditKeyPress(e, key)}
                       onKeyDown={(e)=> this.itemEditKeyDown(e, key)}
+                      onBlur={(e)=> this.itemEditBlur(e, key)}
                       />  
                     }
                     { !!this.props.bonusButtonOneTitle
-                    ? <ListItemIcon>
+                    ? <ListItemIcon className={classes.extraButton}>
                       <Button 
                         variant="raised"
                         size="small"
@@ -148,7 +154,7 @@ class InteractiveList extends React.Component {
                       </Button>
                     </ListItemIcon> : null }
                     { !!this.props.bonusButtonTwoTitle
-                    ? <ListItemIcon>
+                    ? <ListItemIcon className={classes.extraButton}>
                       <Button 
                         variant="raised"
                         size="small"
@@ -161,7 +167,10 @@ class InteractiveList extends React.Component {
                     </ListItemIcon> : null }
 
                     <ListItemSecondaryAction>
-                      <IconButton aria-label="Delete" onClick={this.removeItem.bind(this, key)}>
+                      <IconButton 
+                        aria-label="Delete" 
+                        onClick={this.removeItem.bind(this, key)}
+                      >
                         <DeleteIcon />
                       </IconButton>
                     </ListItemSecondaryAction>

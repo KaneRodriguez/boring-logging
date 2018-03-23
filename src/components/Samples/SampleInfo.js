@@ -197,7 +197,7 @@ class SampleInfo extends Component {
             // this is a new one
             firebase.push(
                 samplesPath, 
-                sample ? sample : {title: 'Click Here to Change Title'}
+                sample ? sample : {title: 'New Sample'}
             )
         }
     }

@@ -96,7 +96,7 @@ class Borings extends Component {
       
       addBoring = (obj) => {
         const {firebase, authUser, boringsPath} = this.props
-        let newObj = obj ? obj : {title: 'Click Here to Change Title'}
+        let newObj = obj ? obj : {title: 'New Boring'}
         console.log("boringsPath", boringsPath, "obj", obj)
         firebase.push(boringsPath, newObj)
       }

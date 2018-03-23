@@ -73,7 +73,7 @@ class Projects extends Component {
     console.log("adding obj", obj)
     let projectsPath = `users/${authUser.uid}/projects/`
     console.log('projects path', projectsPath)
-    let newObj = obj ? obj : {title: 'Click Here to Change Title'}
+    let newObj = obj ? obj : {title: 'New Project'}
     console.log("new obj", newObj)
     firebase.push(projectsPath, newObj)
   }
