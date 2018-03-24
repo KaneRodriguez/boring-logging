@@ -47,7 +47,7 @@ class InteractiveList extends React.Component {
     editKey: null,
     editTitle: '',
   };
-
+  
   removeItem(key) {
     if(this.props.removeItem) {
       this.props.removeItem(key)
@@ -81,6 +81,11 @@ class InteractiveList extends React.Component {
       console.log('No editItemTitle func given');
     }
   }
+
+  onItemTitleChange = (key, title) => {
+    this.setState({editTitle: title})
+  }
+
   itemEditBlur = (e, key) => {
     e.key = 'Enter'
     this.itemEditKeyPress(e, key)
@@ -92,10 +97,6 @@ class InteractiveList extends React.Component {
       this.editItemTitle(key, e.target.value);
       
       e.preventDefault();
-    } else if(e.key !== 'Enter') { 
-      this.setState({editTitle: e.target.value + e.key})
-    } else {
-      // TODO: display error
     }
   }
 
@@ -133,11 +134,12 @@ class InteractiveList extends React.Component {
                     />
                     :
                       <TextField 
+                      autoFocus={true}                      
                       id="with-placeholder"
                       margin="normal"
                       value={this.state.editTitle}
                       onKeyPress={(e)=> this.itemEditKeyPress(e, key)}
-                      onKeyDown={(e)=> this.itemEditKeyDown(e, key)}
+                      onChange={(e)=> this.onItemTitleChange(key, e.target.value)}
                       onBlur={(e)=> this.itemEditBlur(e, key)}
                       />  
                     }

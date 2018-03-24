@@ -98,7 +98,6 @@ class Borings extends Component {
       addBoring = (obj) => {
         const {firebase, authUser, boringsPath} = this.props
         let newObj = obj ? obj : {title: 'New Boring'}
-        console.log("boringsPath", boringsPath, "obj", obj)
         firebase.push(boringsPath, newObj)
       }
 
@@ -157,9 +156,9 @@ class Borings extends Component {
             bonusButtonOneTitle={"Info"}
             bonusButtonOneOnClick={this.boringInfoShowClicked}
             />
-            <SimpleMap
+            {/* <SimpleMap
             locations={boringLocations}
-            />
+            /> */}
         </div>
         : 
         <div className={classes.root} spacing={4}>
