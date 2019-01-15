@@ -4,8 +4,10 @@
 
 ## Installation
 
-* `git clone https://github.com/kanerodriguez/boring-logging
-* `cd boring-logging
-* `npm install`
-* `npm start`
-* visit http://localhost:3000/
+```
+git clone https://github.com/kanerodriguez/boring-logging
+cd boring-logging
+npm install
+npm start
+```
+Visit http://localhost:3000/
