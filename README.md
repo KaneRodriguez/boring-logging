@@ -38,7 +38,7 @@ Visit http://localhost:3000/
 
 To login, you will have to connect your own instance of firebase. 
 
-Follow instructions on creating your own firebase project [here]()
+Follow instructions on creating your own firebase project [here](https://firebase.google.com/docs/web/setup)
 
 Then, open the src/firebase.js file and update the production and development config variables to your project's specific configuration.
 
