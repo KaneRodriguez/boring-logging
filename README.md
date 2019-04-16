@@ -2,7 +2,7 @@
 
 **Warning:** This application is no longer being actively maintained!
 
-Boring Logging was meant as an voice-based accessibility application to aid Civil Engineers with performing ground sample analysis by providing 3D sample data visualizations.
+Boring Logging was meant as a voice-based accessibility application to aid Civil Engineers with performing ground sample analysis by providing 3D sample data visualizations.
 
 Voice-based assistance was enabled through the [Speech Kitt](https://github.com/TalAter/SpeechKITT) voice assistant. Intuitive actions were chosen to help a user create items, remove items, update specific fields, and more, all from their voice.
 
